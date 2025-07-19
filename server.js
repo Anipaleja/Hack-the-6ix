@@ -15,6 +15,7 @@ const healthTimerRoutes = require('./routes/healthTimers');
 const biometricDataRoutes = require('./routes/biometricData');
 const aiInsightsRoutes = require('./routes/aiInsights');
 const mlModelsRoutes = require('./routes/mlModels');
+const quantumSecurityRoutes = require('./routes/quantumSecurity');
 
 // Advanced Health Monitoring System
 const RealTimeHealthMonitor = require('./utils/realTimeHealthMonitor');
@@ -78,6 +79,7 @@ app.use('/api/health-timers', healthTimerRoutes);
 app.use('/api/biometric-data', biometricDataRoutes);
 app.use('/api/ai-insights', aiInsightsRoutes);
 app.use('/api/ml-models', mlModelsRoutes);
+app.use('/api/quantum-security', quantumSecurityRoutes);
 
 // Real-time monitoring stats endpoint
 app.get('/api/monitoring/stats', (req, res) => {

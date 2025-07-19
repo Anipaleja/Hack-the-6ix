@@ -19,6 +19,7 @@
 - **Voice Analysis Engine**: Extract medical insights from natural speech patterns
 
 ### **Smart Wearable Integration**
+- **Google Fit Integration**: Quantum-encrypted sync with comprehensive fitness data (steps, sleep, heart rate)
 - **Apple Watch/Fitbit Sync**: Secure encryption of all fitness device data
 - **Real-Time Health Monitoring**: WebSocket-based live health metric streaming
 - **Emergency Alert System**: Automatic notifications for critical health events
@@ -46,6 +47,7 @@ This backend is the secure core of an **quantum-protected health ecosystem**:
 - **Panda Companion Device**: Raspberry Pi with voice interaction and LED indicators
 - **Voice Assistant**: Python/Docker VA with wake word detection and Deepgram transcription
 - **AI Processing**: Vellum + Gemini integration for intent classification and response generation
+- **Google Fit Integration**: Quantum-secured fitness data with automatic sync and privacy protection
 - **Apple Watch/Fitbit**: Secure wearable data synchronization with quantum encryption
 - **Web Dashboard**: React frontend for health analytics and emergency contact management
 - **Quantum Backend**: This Node.js service with blockchain and zero-knowledge privacy
@@ -58,6 +60,7 @@ This backend is the secure core of an **quantum-protected health ecosystem**:
 │   ├── HealthLog.js              # AI-analyzed health logs
 │   ├── HealthTimer.js            # Emergency check-in timers
 │   ├── SecureHealthData.js       # Quantum-encrypted health data
+│   ├── GoogleFitData.js          # Google Fit integration with quantum security
 │   ├── AIInsights.js             # AI-generated health insights
 │   └── BiometricData.js          # Wearable device data
 ├── routes/
@@ -65,8 +68,12 @@ This backend is the secure core of an **quantum-protected health ecosystem**:
 │   ├── healthLogs.js             # Voice log processing with AI analysis
 │   ├── healthTimers.js           # Health check-in timer management
 │   ├── quantumSecurity.js        # Quantum encryption and blockchain APIs
+│   ├── googleFit.js              # Google Fit integration endpoints
 │   ├── aiInsights.js             # AI health insights and recommendations
 │   └── mlModels.js               # Machine learning health predictions
+├── services/
+│   ├── googleFitService.js       # Google Fit API client and data processing
+│   └── googleFitSyncService.js   # Automatic fitness data synchronization
 ├── utils/
 │   ├── quantumHealthSecurity.js  # Quantum encryption and blockchain
 │   ├── advancedHealthAI.js       # AI health analysis and insights
@@ -101,6 +108,17 @@ This backend is the secure core of an **quantum-protected health ecosystem**:
 ### Wearable Device Data
 - `POST /api/biometric-data` - Store encrypted Apple Watch/Fitbit data
 - `GET /api/biometric-data/user/:userId` - Get user's wearable data (encrypted)
+
+### Google Fit Integration
+- `GET /api/google-fit/status?userId=USER_ID` - Check Google Fit connection status
+- `GET /api/google-fit/authorize?userId=USER_ID` - Get OAuth authorization URL
+- `GET /api/google-fit/oauth2callback` - OAuth callback handler (automatic)
+- `POST /api/google-fit/sync` - Manual fitness data synchronization
+- `GET /api/google-fit/data?userId=USER_ID&type=summary` - Get fitness summary
+- `GET /api/google-fit/data?userId=USER_ID&type=activity&days=7` - Get activity data
+- `GET /api/google-fit/data?userId=USER_ID&type=sleep&days=7` - Get sleep data
+- `GET /api/google-fit/analytics?userId=USER_ID&period=30d` - Quantum-secured analytics
+- `DELETE /api/google-fit/disconnect` - Disconnect Google Fit integration
 - `GET /api/biometric-data/analytics/:userId` - Advanced health analytics
 - `GET /api/biometric-data/alerts/:userId` - Real-time health alerts
 - `POST /api/biometric-data/batch` - Batch sync from wearable devices

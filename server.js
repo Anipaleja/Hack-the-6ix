@@ -16,9 +16,11 @@ const biometricDataRoutes = require('./routes/biometricData');
 const aiInsightsRoutes = require('./routes/aiInsights');
 const mlModelsRoutes = require('./routes/mlModels');
 const quantumSecurityRoutes = require('./routes/quantumSecurity');
+const googleFitRoutes = require('./routes/googleFit');
 
 // Advanced Health Monitoring System
 const RealTimeHealthMonitor = require('./utils/realTimeHealthMonitor');
+const GoogleFitSyncService = require('./services/googleFitSyncService');
 
 const app = express();
 const server = http.createServer(app);
@@ -27,6 +29,9 @@ const PORT = process.env.PORT || 3000;
 // Initialize Real-Time Health Monitor
 const healthMonitor = new RealTimeHealthMonitor();
 healthMonitor.initializeWebSocketServer(server);
+
+// Initialize Google Fit Sync Service
+const googleFitSync = new GoogleFitSyncService();
 
 // Clean up inactive connections every 5 minutes
 setInterval(() => {
@@ -80,6 +85,7 @@ app.use('/api/biometric-data', biometricDataRoutes);
 app.use('/api/ai-insights', aiInsightsRoutes);
 app.use('/api/ml-models', mlModelsRoutes);
 app.use('/api/quantum-security', quantumSecurityRoutes);
+app.use('/api/google-fit', googleFitRoutes);
 
 // Real-time monitoring stats endpoint
 app.get('/api/monitoring/stats', (req, res) => {
@@ -268,6 +274,7 @@ app.use('*', (req, res) => {
 // Graceful shutdown handling
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully');
+  googleFitSync.stop();
   server.close(() => {
     console.log('HTTP server closed');
     mongoose.connection.close(false, () => {
@@ -279,6 +286,7 @@ process.on('SIGTERM', () => {
 
 process.on('SIGINT', () => {
   console.log('SIGINT received, shutting down gracefully');
+  googleFitSync.stop();
   server.close(() => {
     console.log('HTTP server closed');
     mongoose.connection.close(false, () => {
@@ -296,4 +304,12 @@ server.listen(PORT, () => {
   console.log(`Real-time health monitoring: ACTIVE`);
   console.log(`AI insights and ML models: READY`);
   console.log(`Database: ${mongoose.connection.readyState === 1 ? 'CONNECTED' : 'CONNECTING...'}`);
+  
+  // Start Google Fit sync service
+  try {
+    googleFitSync.start();
+    console.log(`Google Fit sync service: ACTIVE`);
+  } catch (error) {
+    console.log(`Google Fit sync service: DISABLED (${error.message})`);
+  }
 });

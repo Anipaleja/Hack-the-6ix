@@ -18,16 +18,19 @@ app.use(morgan('combined'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Connect to MongoDB
+// Connect to MongoDB (Atlas or local)
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
 .then(() => {
   console.log('Connected to MongoDB successfully');
+  console.log(`Database: ${mongoose.connection.name}`);
+  console.log(`Host: ${mongoose.connection.host}`);
 })
 .catch((error) => {
   console.error('MongoDB connection error:', error);
+  console.error('Make sure your MongoDB Atlas password is correct in the .env file');
   process.exit(1);
 });
 

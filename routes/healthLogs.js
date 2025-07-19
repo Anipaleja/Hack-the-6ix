@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const HealthLog = require('../models/HealthLog');
 const User = require('../models/User');
+const TranscriptionAnalyzer = require('../utils/transcriptionAnalyzer');
+
+// Initialize transcription analyzer
+const analyzer = new TranscriptionAnalyzer();
 
 // GET all health logs for a user
 router.get('/user/:userId', async (req, res) => {
@@ -53,7 +57,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST create new health log
+// POST create new health log with automatic transcription analysis
 router.post('/', async (req, res) => {
   try {
     const {
@@ -79,21 +83,47 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
     
+    // Analyze transcription for keywords and medical entities
+    const analysis = analyzer.analyze(transcription);
+    
+    // Merge analyzed data with any provided healthData
+    const processedHealthData = {
+      symptoms: analysis.symptoms,
+      severity: analysis.severity,
+      mood: analysis.mood,
+      tags: analysis.tags,
+      detectedKeywords: analysis.detectedKeywords,
+      medicalEntities: analysis.medicalEntities,
+      timeContext: analysis.timeContext,
+      // Override with any manually provided data
+      ...healthData
+    };
+    
     const healthLog = new HealthLog({
       userId,
       transcription,
       audioFile,
       deviceId,
       metadata: metadata || {},
-      healthData: healthData || {}
+      healthData: processedHealthData,
+      processed: true, // Mark as processed since we analyzed it
+      processedAt: new Date()
     });
     
     await healthLog.save();
     await healthLog.populate('userId', 'name email');
     
     res.status(201).json({
-      message: 'Health log created successfully',
-      healthLog
+      message: 'Health log created and analyzed successfully',
+      healthLog,
+      analysis: {
+        keywordsDetected: analysis.detectedKeywords.length,
+        medicalEntitiesFound: analysis.medicalEntities.length,
+        symptomsIdentified: analysis.symptoms.length,
+        severityDetected: analysis.severity,
+        moodDetected: analysis.mood,
+        processingComplete: true
+      }
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to create health log', message: error.message });
@@ -137,6 +167,42 @@ router.delete('/:id', async (req, res) => {
     res.json({ message: 'Health log deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete health log', message: error.message });
+  }
+});
+
+// POST analyze transcription without saving (for testing)
+router.post('/analyze', async (req, res) => {
+  try {
+    const { transcription } = req.body;
+    
+    if (!transcription) {
+      return res.status(400).json({ error: 'Transcription text is required' });
+    }
+    
+    const analysis = analyzer.analyze(transcription);
+    
+    res.json({
+      message: 'Transcription analyzed successfully',
+      originalText: transcription,
+      analysis: {
+        symptoms: analysis.symptoms,
+        severity: analysis.severity,
+        mood: analysis.mood,
+        detectedKeywords: analysis.detectedKeywords,
+        medicalEntities: analysis.medicalEntities,
+        timeContext: analysis.timeContext,
+        suggestedTags: analysis.tags
+      },
+      summary: {
+        keywordsFound: analysis.detectedKeywords.length,
+        medicalEntitiesFound: analysis.medicalEntities.length,
+        symptomsIdentified: analysis.symptoms.length,
+        confidenceScore: analysis.detectedKeywords.length > 0 ? 
+          analysis.detectedKeywords.reduce((sum, kw) => sum + kw.confidence, 0) / analysis.detectedKeywords.length : 0
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to analyze transcription', message: error.message });
   }
 });
 

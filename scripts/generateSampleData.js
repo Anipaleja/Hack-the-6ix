@@ -3,6 +3,10 @@ require('dotenv').config();
 
 const User = require('../models/User');
 const HealthLog = require('../models/HealthLog');
+const TranscriptionAnalyzer = require('../utils/transcriptionAnalyzer');
+
+// Initialize analyzer for processing sample data
+const analyzer = new TranscriptionAnalyzer();
 
 // Sample health log transcriptions for demo purposes
 const sampleTranscriptions = [
@@ -102,6 +106,9 @@ async function generateSampleData() {
       timestamp.setHours(Math.floor(Math.random() * 24));
       timestamp.setMinutes(Math.floor(Math.random() * 60));
 
+      // Analyze the transcription for keywords and medical entities
+      const analysis = analyzer.analyze(randomTranscription);
+
       const healthLog = {
         userId: randomUser._id,
         transcription: randomTranscription,
@@ -113,17 +120,17 @@ async function generateSampleData() {
           language: 'en'
         },
         healthData: {
-          symptoms: generateRandomSymptoms(),
-          severity: Math.floor(Math.random() * 10) + 1,
-          tags: generateRandomTags(),
-          mood: ['excellent', 'good', 'fair', 'poor', 'terrible'][Math.floor(Math.random() * 5)]
+          symptoms: analysis.symptoms,
+          severity: analysis.severity || Math.floor(Math.random() * 10) + 1,
+          tags: analysis.tags,
+          mood: analysis.mood || ['excellent', 'good', 'fair', 'poor', 'terrible'][Math.floor(Math.random() * 5)],
+          detectedKeywords: analysis.detectedKeywords,
+          medicalEntities: analysis.medicalEntities,
+          timeContext: analysis.timeContext
         },
-        processed: Math.random() > 0.3 // 70% processed
+        processed: true, // Mark as processed since we analyzed it
+        processedAt: new Date(timestamp.getTime() + Math.random() * 3600000) // Processed within an hour
       };
-
-      if (healthLog.processed) {
-        healthLog.processedAt = new Date(timestamp.getTime() + Math.random() * 3600000); // Processed within an hour
-      }
 
       healthLogs.push(healthLog);
     }

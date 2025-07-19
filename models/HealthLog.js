@@ -55,6 +55,34 @@ const healthLogSchema = new mongoose.Schema({
       type: String,
       enum: ['excellent', 'good', 'fair', 'poor', 'terrible'],
       default: null
+    },
+    // Keyword detection results
+    detectedKeywords: [{
+      word: String,
+      category: {
+        type: String,
+        enum: ['symptom', 'emotion', 'medication', 'body_part', 'severity', 'time', 'activity']
+      },
+      confidence: Number,
+      position: Number // Position in transcription
+    }],
+    // Medical entities detected
+    medicalEntities: [{
+      entity: String,
+      type: {
+        type: String,
+        enum: ['condition', 'medication', 'dosage', 'frequency', 'body_part', 'symptom']
+      },
+      confidence: Number
+    }],
+    // Time-based context
+    timeContext: {
+      when: {
+        type: String,
+        enum: ['morning', 'afternoon', 'evening', 'night', 'after_meal', 'before_meal', 'exercise', 'rest']
+      },
+      duration: String, // "2 hours", "since yesterday", etc.
+      frequency: String // "daily", "occasionally", "first time", etc.
     }
   },
   processed: {

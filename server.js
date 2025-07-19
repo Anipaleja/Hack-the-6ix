@@ -19,10 +19,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Connect to MongoDB (Atlas or local)
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGODB_URI)
 .then(() => {
   console.log('Connected to MongoDB successfully');
   console.log(`Database: ${mongoose.connection.name}`);
@@ -37,6 +34,38 @@ mongoose.connect(process.env.MONGODB_URI, {
 // Routes
 app.use('/api/health-logs', healthLogRoutes);
 app.use('/api/users', userRoutes);
+
+// Root route - API documentation
+app.get('/', (req, res) => {
+  res.json({
+    message: '🏥 Health Logging API',
+    status: 'Running',
+    version: '1.0.0',
+    endpoints: {
+      health: 'GET /api/health',
+      users: {
+        'Get all users': 'GET /api/users',
+        'Get user by ID': 'GET /api/users/:id',
+        'Create user': 'POST /api/users',
+        'Update user': 'PUT /api/users/:id',
+        'Delete user': 'DELETE /api/users/:id'
+      },
+      healthLogs: {
+        'Get logs for user': 'GET /api/health-logs/user/:userId',
+        'Get log by ID': 'GET /api/health-logs/:id',
+        'Create health log': 'POST /api/health-logs',
+        'Update health log': 'PUT /api/health-logs/:id',
+        'Delete health log': 'DELETE /api/health-logs/:id',
+        'Get analytics': 'GET /api/health-logs/analytics/:userId'
+      }
+    },
+    database: {
+      status: 'Connected to MongoDB Atlas',
+      name: 'hack-the-6ix'
+    },
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Basic health check route
 app.get('/api/health', (req, res) => {

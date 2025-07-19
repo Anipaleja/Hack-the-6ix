@@ -6,10 +6,7 @@ async function testMongoConnection() {
     console.log('Testing MongoDB Atlas connection...');
     console.log('Connection string:', process.env.MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@'));
     
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGODB_URI);
     
     console.log('✅ Successfully connected to MongoDB Atlas!');
     console.log(`Database: ${mongoose.connection.name}`);

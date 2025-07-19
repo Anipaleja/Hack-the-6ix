@@ -1,27 +1,22 @@
 # Quick Setup Guide
 
-## 🚀 What's Been Set Up
-
-✅ **Complete Backend Structure**
+**Complete Backend Structure**
 - Node.js/Express server with MongoDB integration
 - User management system with medical profiles
 - Health log system for voice transcriptions
 - RESTful API with full CRUD operations
 - Sample data generation script
 
-✅ **Database Models**
+**Database Models**
 - `User`: Stores user profiles, medical history, device IDs
 - `HealthLog`: Stores transcriptions, health data, analytics
 
-✅ **API Endpoints Ready**
+**API Endpoints Ready**
 - `/api/users/*` - User management
 - `/api/health-logs/*` - Health log management  
 - `/api/health-logs/analytics/*` - Health analytics
 
-## 📋 Next Steps for Team
-
-### 1. Discussion with Isabel (Log Structure)
-**Current log structure includes:**
+**Example**
 ```javascript
 {
   transcription: "I have a headache...",
@@ -39,26 +34,13 @@
 }
 ```
 
-**Questions for Isabel:**
-- What additional fields should be in logs?
-- How should mood/symptoms be categorized?
-- What metadata is needed from the transcription process?
-- Any specific medical terminology to capture?
-
-### 2. Discussion with Swastik (Historical Data)
 **Current analytics include:**
 - Mood trends over time
 - Common symptoms tracking
 - Severity patterns
 - Basic health metrics
 
-**Questions for Swastik:**
-- How should historical health data be aggregated?
-- What time periods for analysis (daily/weekly/monthly)?
-- What specific health metrics to track?
-- How to handle data privacy/HIPAA considerations?
-
-## 🛠 Development Setup
+## Development Setup
 
 ### Prerequisites
 ```bash
@@ -99,23 +81,23 @@ curl -X POST http://localhost:3000/api/health-logs \
   -d '{"userId":"USER_ID","transcription":"Sample log..."}'
 ```
 
-## 📝 What's Ready vs. What Needs Discussion
+## What's Ready vs. What Needs Discussion
 
-### ✅ Ready Now
+### Ready Now
 - Database schema and connections
 - Basic CRUD operations for users and logs
 - Sample data generation
 - Health analytics foundation
 - API structure for frontend integration
 
-### 🔄 Needs Team Discussion
+### Needs Team Discussion
 - **Log Structure**: Exact fields needed in health logs
 - **Historical Data**: How to store and analyze long-term health trends
 - **Voice Integration**: How transcription service connects
 - **Analytics**: Specific health metrics and reporting needs
 - **Authentication**: User login and security requirements
 
-## 🎯 Integration Points
+## Integration Points
 
 ### For Frontend Team
 - API base URL: `http://localhost:3000/api`
@@ -133,4 +115,4 @@ curl -X POST http://localhost:3000/api/health-logs \
 - Configurable time periods via query params
 - Aggregated health metrics ready for visualization
 
-Ready for team discussions and further development! 🚀
+

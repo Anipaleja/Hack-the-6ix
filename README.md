@@ -1,6 +1,6 @@
 # Hack-the-6ix - Health Logging Backend
 
-A Node.js backend API for a health logging device that transcribes user voice input and stores health-related data.
+> A Node.js backend API for CLARA, a health logging device that transcribes user voice input and stores health-related data.
 
 ## Features
 

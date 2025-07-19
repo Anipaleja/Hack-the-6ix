@@ -8,6 +8,7 @@ require('dotenv').config();
 // Import routes
 const healthLogRoutes = require('./routes/healthLogs');
 const userRoutes = require('./routes/users');
+const healthTimerRoutes = require('./routes/healthTimers');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -34,6 +35,7 @@ mongoose.connect(process.env.MONGODB_URI)
 // Routes
 app.use('/api/health-logs', healthLogRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/health-timers', healthTimerRoutes);
 
 // Root route - API documentation
 app.get('/', (req, res) => {
@@ -54,9 +56,30 @@ app.get('/', (req, res) => {
         'Get logs for user': 'GET /api/health-logs/user/:userId',
         'Get log by ID': 'GET /api/health-logs/:id',
         'Create health log': 'POST /api/health-logs',
+        'Analyze transcription': 'POST /api/health-logs/analyze',
         'Update health log': 'PUT /api/health-logs/:id',
         'Delete health log': 'DELETE /api/health-logs/:id',
         'Get analytics': 'GET /api/health-logs/analytics/:userId'
+      },
+      healthTimers: {
+        'Get user timers': 'GET /api/health-timers/user/:userId',
+        'Create timer': 'POST /api/health-timers',
+        'Complete timer': 'PUT /api/health-timers/:id/complete',
+        'Cancel timer': 'PUT /api/health-timers/:id/cancel',
+        'Get expired timers': 'GET /api/health-timers/system/expired'
+      },
+      emergencyContacts: {
+        'Get contacts': 'GET /api/users/:id/emergency-contacts',
+        'Add contact': 'POST /api/users/:id/emergency-contacts',
+        'Remove contact': 'DELETE /api/users/:id/emergency-contacts/:contactId',
+        'Update contact': 'PUT /api/users/:id/emergency-contacts/:contactId'
+      },
+      voiceAssistant: {
+        'Logging intent': 'POST /api/health-logs (with transcription)',
+        'Timer create': 'POST /api/health-timers',
+        'Timer stop': 'PUT /api/health-timers/:id/complete',
+        'Contact create': 'POST /api/users/:id/emergency-contacts',
+        'Contact remove': 'DELETE /api/users/:id/emergency-contacts/:contactId'
       }
     },
     database: {

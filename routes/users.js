@@ -179,4 +179,138 @@ router.delete('/:id/devices/:deviceId', async (req, res) => {
   }
 });
 
+// POST add emergency contact (for VA intent: emergency_contacts/create)
+router.post('/:id/emergency-contacts', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, phoneNumber, isFamily, relationship, priority } = req.body;
+    
+    if (!name) {
+      return res.status(400).json({ error: 'Contact name is required' });
+    }
+    
+    if (!email && !phoneNumber) {
+      return res.status(400).json({ error: 'Either email or phone number is required' });
+    }
+    
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const newContact = {
+      name,
+      email: email || null,
+      phoneNumber: phoneNumber || null,
+      isFamily: isFamily || false,
+      relationship: relationship || 'emergency_contact',
+      priority: priority || user.emergencyContacts.length + 1
+    };
+    
+    user.emergencyContacts.push(newContact);
+    await user.save();
+    
+    res.json({
+      message: 'Emergency contact added successfully',
+      contact: newContact,
+      totalContacts: user.emergencyContacts.length
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to add emergency contact', message: error.message });
+  }
+});
+
+// GET emergency contacts for user
+router.get('/:id/emergency-contacts', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Sort by priority (lowest number = highest priority)
+    const contacts = user.emergencyContacts.sort((a, b) => a.priority - b.priority);
+    
+    res.json({
+      contacts,
+      total: contacts.length
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch emergency contacts', message: error.message });
+  }
+});
+
+// DELETE remove emergency contact (for VA intent: emergency_contacts/remove)
+router.delete('/:id/emergency-contacts/:contactId', async (req, res) => {
+  try {
+    const { id, contactId } = req.params;
+    
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const contactIndex = user.emergencyContacts.findIndex(
+      contact => contact._id.toString() === contactId
+    );
+    
+    if (contactIndex === -1) {
+      return res.status(404).json({ error: 'Emergency contact not found' });
+    }
+    
+    const removedContact = user.emergencyContacts[contactIndex];
+    user.emergencyContacts.splice(contactIndex, 1);
+    await user.save();
+    
+    res.json({
+      message: 'Emergency contact removed successfully',
+      removedContact: {
+        name: removedContact.name,
+        email: removedContact.email,
+        phoneNumber: removedContact.phoneNumber
+      },
+      remainingContacts: user.emergencyContacts.length
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to remove emergency contact', message: error.message });
+  }
+});
+
+// PUT update emergency contact
+router.put('/:id/emergency-contacts/:contactId', async (req, res) => {
+  try {
+    const { id, contactId } = req.params;
+    const updates = req.body;
+    
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const contactIndex = user.emergencyContacts.findIndex(
+      contact => contact._id.toString() === contactId
+    );
+    
+    if (contactIndex === -1) {
+      return res.status(404).json({ error: 'Emergency contact not found' });
+    }
+    
+    // Update contact fields
+    Object.keys(updates).forEach(key => {
+      if (updates[key] !== undefined) {
+        user.emergencyContacts[contactIndex][key] = updates[key];
+      }
+    });
+    
+    await user.save();
+    
+    res.json({
+      message: 'Emergency contact updated successfully',
+      contact: user.emergencyContacts[contactIndex]
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update emergency contact', message: error.message });
+  }
+});
+
 module.exports = router;

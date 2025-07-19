@@ -1,63 +1,17 @@
-# Hack-the-6ix - Health Companion Backend
+# Hack-the-6ix - Health Logging Backend
 
-**Backend API for a comprehensive health companion system featuring voice assistant, physical device integration, and medical logging capabilities.**
+A Node.js backend API for a health logging device that transcribes user voice input and stores health-related data.
 
-## 🎯 Project Overview
+## Features
 
-This backend is part of a larger **AI-powered health companion ecosystem**:
+- **MongoDB Integration**: Full database layer for users and health logs
+- **RESTful API**: Complete CRUD operations for users and health logs  
+- **Health Analytics**: Basic analytics and mood tracking
+- **Voice Transcription Support**: Store and manage transcribed health logs
+- **User Management**: User profiles with medical history and device management
+- **Sample Data Generation**: Script to populate database with demo data
 
-- **🧸 Physical Device**: Panda plushie with Raspberry Pi, microphone, speakers, and LED indicators
-- **🎤 Voice Assistant**: Python/Docker-based VA with wake word detection and Deepgram transcription
-- **🤖 AI Processing**: Vellum + Gemini integration for intent classification and response generation
-- **🌐 Web Frontend**: React dashboard for viewing logs and managing emergency contacts
-- **📱 iPhone App**: Apple Watch integration for detailed health analytics
-- **🗄️ Backend API**: This Node.js service - handles data storage, analysis, and API endpoints
-
-## ✨ Enhanced Features
-
-### 🧠 **Intelligent Transcription Analysis**
-- **Automatic Keyword Detection**: Extracts symptoms, medications, body parts, emotions
-- **Medical Entity Recognition**: Identifies dosages, frequencies, medical conditions
-- **Severity & Mood Analysis**: Auto-detects pain levels (1-10) and emotional states
-- **Time Context Extraction**: Understanding of "morning", "after meals", duration patterns
-
-### 🎤 **Voice Assistant Integration**
-- **Logging Intent Support**: Handles VA's 'logging' intent to store transcribed health data
-- **Emergency Contact Management**: API endpoints for emergency contacts (create/remove)
-- **Timer Integration**: Support for health check-in timers and notifications
-- **Real-time Processing**: Instant keyword analysis when VA sends transcription data
-
-### 📊 **Comprehensive Health Analytics**
-- **Historical Trends**: Symptom progression, mood patterns, medication effectiveness
-- **Timeline Views**: Chronological health logs for caregivers and users
-- **Smart Insights**: Pattern recognition for symptom triggers and improvement periods
-
-## 🏗️ System Architecture
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────────┐
-│   Panda Plushie │    │  Voice Assistant │    │   Backend API       │
-│                 │    │                  │    │                     │
-│ • Raspberry Pi  │◄──►│ • Wake Word      │◄──►│ • MongoDB Storage   │
-│ • Microphone    │    │ • Deepgram STT   │    │ • Keyword Analysis  │
-│ • Speakers      │    │ • Gemini LLM     │    │ • Health Analytics  │
-│ • LED Display   │    │ • Intent Router  │    │ • Emergency Contacts│
-└─────────────────┘    └──────────────────┘    └─────────────────────┘
-         ▲                        ▲                         ▲
-         │                        │                         │
-         ▼                        ▼                         ▼
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────────┐
-│  iPhone App     │    │   React Frontend │    │    Apple Watch      │
-│                 │    │                  │    │                     │
-│ • Privacy Toggle│    │ • Log Viewer     │    │ • Health Metrics    │
-│ • Watch Bridge  │    │ • Timeline View  │    │ • Sensor Data       │
-│ • API Config    │    │ • Contact Mgmt   │    │ • Auto Sync         │
-└─────────────────┘    └──────────────────┘    └─────────────────────┘
-```
-
-## 🎯 Voice Assistant Integration
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── models/
@@ -120,65 +74,79 @@ This backend is part of a larger **AI-powered health companion ecosystem**:
 - `POST /api/health-logs` - Create health log (`report/create` → `report/finish`)
 - `PUT /api/health-logs/:id` - Update health log
 - `DELETE /api/health-logs/:id` - Delete health log
-- `GET /api/health-logs/analytics/:userId` - Get health analytics
+- `POST /api/health-logs/:id/process` - Mark log as processed with AI analysis
+- `GET /api/health-logs/analytics/:userId` - Get health analytics for user
 
-## 🎤 Voice Assistant Integration Examples
+## Sample API Usage
 
-### Logging Intent Flow
-```python
-# Voice Assistant Python code
-def handle_logging_intent(user_id, transcription_text, device_id):
-    url = "http://your-backend.com/api/health-logs"
-    payload = {
-        "userId": user_id,
-        "transcription": transcription_text,
-        "deviceId": device_id  # "panda_device_001"
+### Create a User
+```bash
+curl -X POST http://localhost:3000/api/users \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "profile": {
+      "age": 30,
+      "gender": "male"
     }
-    response = requests.post(url, json=payload)
-    return response.json()  # Returns analyzed keywords, symptoms, severity
+  }'
 ```
 
-### Emergency Contact Management
-```python
-# Add contact via VA
-def add_emergency_contact(user_id, name, phone_number, email=None, is_family=False):
-    url = f"http://your-backend.com/api/users/{user_id}/emergency-contacts"
-    payload = {
-        "name": name,
-        "phoneNumber": phone_number,
-        "email": email,
-        "isFamily": is_family
+### Create a Health Log
+```bash
+curl -X POST http://localhost:3000/api/health-logs \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "USER_ID_HERE",
+    "transcription": "I have a headache today, feeling tired",
+    "deviceId": "device_001",
+    "healthData": {
+      "symptoms": ["headache", "fatigue"],
+      "severity": 6,
+      "mood": "fair"
     }
-    return requests.post(url, json=payload)
-
-# Remove contact via VA
-def remove_emergency_contact(user_id, contact_name):
-    # First, get contacts to find the ID
-    contacts = requests.get(f"http://your-backend.com/api/users/{user_id}/emergency-contacts")
-    contact = next((c for c in contacts.json()['contacts'] if c['name'].lower() == contact_name.lower()), None)
-    
-    if contact:
-        return requests.delete(f"http://your-backend.com/api/users/{user_id}/emergency-contacts/{contact['_id']}")
-    return {"error": "Contact not found"}
+  }'
 ```
 
-### Health Timer Management
-```python
-# Create check-in timer
-def create_health_timer(user_id, timer_name, duration_minutes):
-    url = "http://your-backend.com/api/health-timers"
-    payload = {
-        "userId": user_id,
-        "name": timer_name,
-        "duration": duration_minutes,
-        "timerType": "check_in",
-        "deviceId": "panda_device_001"
-    }
-    return requests.post(url, json=payload)
+## Data Models
 
-# Complete timer (user checked in)
-def complete_timer(timer_id, notes=None):
-    url = f"http://your-backend.com/api/health-timers/{timer_id}/complete"
-    payload = {"notes": notes} if notes else {}
-    return requests.put(url, json=payload)
-```
+### User Schema
+- Basic info (name, email)
+- Device IDs for linked devices
+- Medical profile (conditions, allergies, medications)
+- Preferences (language, timezone, reminders)
+
+### HealthLog Schema
+- User reference and transcription text
+- Metadata (duration, confidence, language)
+- Health data (symptoms, severity, mood, tags)
+- Processing status for AI analysis
+- Timestamps for tracking
+
+## Development
+
+### Environment Setup
+- Node.js 16+ required
+- MongoDB 4.4+ (local or Atlas)
+- Environment variables in `.env` file
+
+### Adding New Features
+1. Update models in `models/` directory
+2. Add routes in `routes/` directory  
+3. Update server.js if needed
+4. Test with sample data
+
+## Next Steps (TODOs)
+
+3. **Add Authentication**: JWT tokens for API security
+4. **File Upload**: Support for audio file storage
+5. **AI Integration**: Connect transcription and health analysis services
+6. **Real-time Features**: WebSocket support for live device communication
+
+## Team Integration
+
+- **Backend Setup**: Complete (MongoDB + API routes)
+- **Sample Logs**: Generated via script
+- **Isabel Discussion**: Pending (log structure requirements)
+- **Swastik Discussion**: Pending (historical data format)

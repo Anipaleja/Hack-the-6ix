@@ -34,7 +34,7 @@ A Node.js backend API for a health logging device that transcribes user voice in
 
 1. **Clone the repository**
    ```bash
-   cd /Users/anishpaleja/Hack-the-6ix
+   git clone 
    ```
 
 2. **Install dependencies**

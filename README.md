@@ -1,15 +1,36 @@
-# Hack-the-6ix - Health Logging Backend
+# Hack-the-6ix - Health Companion Backend
 
-A Node.js backend API for a health logging device that transcribes user voice input and stores health-related data.
+**Backend API for a comprehensive health companion system featuring voice assistant, physical device integration, and medical logging capabilities.**
 
-## Features
+## Project Overview
 
-- **MongoDB Integration**: Full database layer for users and health logs
-- **RESTful API**: Complete CRUD operations for users and health logs  
-- **Health Analytics**: Basic analytics and mood tracking
-- **Voice Transcription Support**: Store and manage transcribed health logs
-- **User Management**: User profiles with medical history and device management
-- **Sample Data Generation**: Script to populate database with demo data
+This backend is part of a larger **AI-powered health companion ecosystem**:
+
+- **Physical Device**: Panda plushie with Raspberry Pi, microphone, speakers, and LED indicators
+- **Voice Assistant**: Python/Docker-based VA with wake word detection and Deepgram transcription
+- **AI Processing**: Vellum + Gemini integration for intent classification and response generation
+- **Web Frontend**: React dashboard for viewing logs and managing emergency contacts
+- **iPhone App**: Apple Watch integration for detailed health analytics
+- **Backend API**: This Node.js service - handles data storage, analysis, and API endpoints
+
+## Enhanced Features
+
+### **Intelligent Transcription Analysis**
+- **Automatic Keyword Detection**: Extracts symptoms, medications, body parts, emotions
+- **Medical Entity Recognition**: Identifies dosages, frequencies, medical conditions
+- **Severity & Mood Analysis**: Auto-detects pain levels (1-10) and emotional states
+- **Time Context Extraction**: Understanding of "morning", "after meals", duration patterns
+
+### **Voice Assistant Integration**
+- **Logging Intent Support**: Handles VA's 'logging' intent to store transcribed health data
+- **Emergency Contact Management**: API endpoints for emergency contacts (create/remove)
+- **Timer Integration**: Support for health check-in timers and notifications
+- **Real-time Processing**: Instant keyword analysis when VA sends transcription data
+
+### **Comprehensive Health Analytics**
+- **Historical Trends**: Symptom progression, mood patterns, medication effectiveness
+- **Timeline Views**: Chronological health logs for caregivers and users
+- **Smart Insights**: Pattern recognition for symptom triggers and improvement periods
 
 ## Project Structure
 
@@ -38,37 +59,37 @@ A Node.js backend API for a health logging device that transcribes user voice in
 └── .gitignore              # Git ignore patterns
 ```
 
-## 📡 API Endpoints
+## API Endpoints
 
-### 🏥 Health Check
+### Health Check
 - `GET /` - API documentation and system overview
 - `GET /api/health` - Server status
 
-### 👥 User Management
+### User Management
 - `GET /api/users` - Get all users (paginated)
 - `GET /api/users/:id` - Get user by ID
 - `POST /api/users` - Create new user
 - `PUT /api/users/:id` - Update user
 - `DELETE /api/users/:id` - Deactivate user
 
-### 🔗 Device Management
+### Device Management
 - `POST /api/users/:id/devices` - Link device to user
 - `DELETE /api/users/:id/devices/:deviceId` - Remove device
 
-### 🚨 Emergency Contacts (VA Integration)
+### Emergency Contacts (VA Integration)
 - `GET /api/users/:id/emergency-contacts` - Get user's emergency contacts
 - `POST /api/users/:id/emergency-contacts` - Add emergency contact (`emergency_contacts/create`)
 - `PUT /api/users/:id/emergency-contacts/:contactId` - Update contact
 - `DELETE /api/users/:id/emergency-contacts/:contactId` - Remove contact (`emergency_contacts/remove`)
 
-### ⏰ Health Timers (VA Integration)
+### Health Timers (VA Integration)
 - `GET /api/health-timers/user/:userId` - Get user's timers
 - `POST /api/health-timers` - Create check-in timer (`check_in_timer/create`)
 - `PUT /api/health-timers/:id/complete` - Complete timer (`check_in_timer/stop`)
 - `PUT /api/health-timers/:id/cancel` - Cancel timer
 - `GET /api/health-timers/system/expired` - Get expired timers (for alerts)
 
-### 📝 Health Logs (VA Integration)
+### Health Logs (VA Integration)
 - `GET /api/health-logs/user/:userId` - Get logs for user (timeline view)
 - `POST /api/health-logs/analyze` - Analyze transcription (testing)
 - `POST /api/health-logs` - Create health log (`report/create` → `report/finish`)
@@ -137,16 +158,9 @@ curl -X POST http://localhost:3000/api/health-logs \
 3. Update server.js if needed
 4. Test with sample data
 
-## Next Steps (TODOs)
+## Next Steps
 
-3. **Add Authentication**: JWT tokens for API security
-4. **File Upload**: Support for audio file storage
-5. **AI Integration**: Connect transcription and health analysis services
-6. **Real-time Features**: WebSocket support for live device communication
-
-## Team Integration
-
-- **Backend Setup**: Complete (MongoDB + API routes)
-- **Sample Logs**: Generated via script
-- **Isabel Discussion**: Pending (log structure requirements)
-- **Swastik Discussion**: Pending (historical data format)
+- **Add Authentication**: JWT tokens for API security
+- **File Upload**: Support for audio file storage
+- **AI Integration**: Connect transcription and health analysis services
+- **Real-time Features**: WebSocket support for live device communication

@@ -1,12 +1,9 @@
 # MongoDB Atlas Integration Guide
 
-## 🔧 Setup Steps
+## Setup Steps
 
 ### 1. Update Environment Variables
-✅ **Already done** - Your `.env` file has been updated with the Atlas connection string:
-```
-MONGODB_URI=mongodb+srv://anipaleja:<db_password>@hackthe6ix.9ao0mpq.mongodb.net/hack-the-6ix?retryWrites=true&w=majority&appName=HackThe6ix
-```
+**Already done** - `.env` file has been updated with the Atlas connection string under the `MONGODB_URI` variable
 
 ### 2. Replace Database Password
 **IMPORTANT**: Replace `<db_password>` in your `.env` file with your actual MongoDB Atlas password.
@@ -25,27 +22,27 @@ Once the connection test passes:
 npm run dev
 ```
 
-## 🚀 What's Different from Local MongoDB
+## What's Different from Local MongoDB
 
 ### Advantages of MongoDB Atlas:
-- ✅ **Cloud-hosted**: No local MongoDB installation needed
-- ✅ **Scalable**: Automatic scaling and backups
-- ✅ **Secure**: Built-in security features
-- ✅ **Global**: Can be accessed from anywhere
-- ✅ **Team-friendly**: Multiple developers can connect
+- **Cloud-hosted**: No local MongoDB installation needed
+- **Scalable**: Automatic scaling and backups
+- **Secure**: Built-in security features
+- **Global**: Can be accessed from anywhere
+- **Team-friendly**: Multiple developers can connect
 
-### Your Code Changes:
-- ✅ **Minimal**: Only connection string updated
-- ✅ **Compatible**: All existing routes and models work unchanged
-- ✅ **Enhanced logging**: Better connection status messages
+### Code Changes:
+- **Minimal**: Only connection string updated
+- **Compatible**: All existing routes and models work unchanged
+- **Enhanced logging**: Better connection status messages
 
-## 🔐 Security Best Practices
+## Security Best Practices
 
 1. **Never commit your password**: Keep `.env` in `.gitignore`
 2. **Use environment variables**: Perfect for deployment
 3. **Restrict network access**: Configure Atlas IP whitelist if needed
 
-## 🧪 Testing Your Setup
+## Testing Setup
 
 ### Test Connection Only:
 ```bash
@@ -74,15 +71,15 @@ You can easily switch by updating the `MONGODB_URI` in `.env`:
 
 **For Atlas:**
 ```env
-MONGODB_URI=mongodb+srv://anipaleja:YOUR_PASSWORD@hackthe6ix.9ao0mpq.mongodb.net/hack-the-6ix?retryWrites=true&w=majority&appName=HackThe6ix
+MONGODB_URI=YOUR_MONGODB_URL
 ```
 
 **For Local:**
 ```env
-MONGODB_URI=mongodb://localhost:27017/hack-the-6ix
+MONGODB_URI=mongodb://localhost:27017/...
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues:
 
@@ -110,12 +107,3 @@ npm run dev
 echo $MONGODB_URI
 ```
 
-## 📱 Team Development
-
-Your team can now:
-- 🌐 **Work remotely**: No local MongoDB setup required
-- 🔄 **Share data**: Everyone connects to the same Atlas database  
-- 🚀 **Deploy easily**: Same connection string works in production
-- 📊 **Monitor usage**: Atlas provides built-in monitoring
-
-Ready to connect to MongoDB Atlas! 🎉

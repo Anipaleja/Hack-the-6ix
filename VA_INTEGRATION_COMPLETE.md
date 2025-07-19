@@ -1,35 +1,35 @@
 # Voice Assistant Integration Guide
 
-## 🎤 Complete VA ↔ Backend Integration
+## Complete VA ↔ Backend Integration
 
 Your backend is now fully equipped to handle all Voice Assistant intents from your comprehensive health companion system.
 
-## 🏗️ System Integration Points
+## System Integration Points
 
 ### 1. **Physical Device** (Panda Plushie)
 ```
-Raspberry Pi → Microphone → Wake Word Detection → VA Container
-                                     ↓
+Raspberry Pi - Microphone - Wake Word Detection - VA Container
+                                     |
                             Deepgram Transcription
-                                     ↓
+                                     |
                             Intent Classification (Gemini)
-                                     ↓
+                                     |
                             Backend API Calls
 ```
 
-### 2. **Intent Mapping** (VA → Backend)
+### 2. **Intent Mapping** (VA - Backend)
 
 | VA Intent | Backend Endpoint | Description |
 |-----------|------------------|-------------|
-| `report/create` → `report/finish` | `POST /api/health-logs` | Log health transcription with auto-analysis |
+| `report/create` - `report/finish` | `POST /api/health-logs` | Log health transcription with auto-analysis |
 | `emergency_contacts/create` | `POST /api/users/:id/emergency-contacts` | Add emergency contact |
 | `emergency_contacts/remove` | `DELETE /api/users/:id/emergency-contacts/:contactId` | Remove emergency contact |
 | `check_in_timer/create` | `POST /api/health-timers` | Create health check-in timer |
 | `check_in_timer/stop` | `PUT /api/health-timers/:id/complete` | Complete/stop timer |
 
-## 🎯 VA Integration Examples
+## VA Integration Examples
 
-### **Intent: `report/create` → `report/finish`**
+### **Intent: `report/create` - `report/finish`**
 ```python
 # Voice Assistant Python Code
 import requests
@@ -227,7 +227,7 @@ def handle_timer_stop(self, user_id, timer_name=None):
         return "I couldn't check your active timers right now."
 ```
 
-## 🔄 **Complete Integration Flow Example**
+## **Complete Integration Flow Example**
 
 ```python
 # Complete Voice Assistant Integration Class
@@ -271,7 +271,7 @@ class PandaVoiceAssistant:
     # ... (include all the methods from above)
 ```
 
-## 🚨 **Emergency Alert System**
+## **Emergency Alert System**
 
 Your backend tracks expired timers and can trigger emergency alerts:
 
@@ -292,7 +292,7 @@ def check_for_emergency_alerts():
                 send_emergency_alert(contact, timer, user)
 ```
 
-## 🎨 **Frontend Dashboard Integration**
+## **Frontend Dashboard Integration**
 
 Your React frontend can now display:
 
@@ -302,4 +302,4 @@ Your React frontend can now display:
 - **Historical health analytics** with trend visualization
 - **Device connection status** (panda plushie online/offline)
 
-Your comprehensive health companion system is now fully integrated! The backend handles all VA intents, provides rich analytics, and supports your entire ecosystem from the panda plushie to the iPhone app. 🎉
+Your comprehensive health companion system is now fully integrated! The backend handles all VA intents, provides rich analytics, and supports your entire ecosystem from the panda plushie to the iPhone app.

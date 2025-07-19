@@ -65,7 +65,7 @@ curl http://localhost:3000/api/health
 curl http://localhost:3000/api/users
 ```
 
-## 🔄 Switching Between Local and Atlas
+## Switching Between Local and Atlas
 
 You can easily switch by updating the `MONGODB_URI` in `.env`:
 

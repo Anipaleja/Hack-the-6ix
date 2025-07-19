@@ -16,17 +16,17 @@ app.get('/test', (req, res) => {
     message: 'Backend setup is working!',
     timestamp: new Date().toISOString(),
     features: [
-      '✅ Express server setup',
-      '✅ MongoDB models defined',  
-      '✅ API routes created',
-      '✅ Sample data script ready',
-      '🔄 Ready for MongoDB connection'
+      'Express server setup',
+      'MongoDB models defined',  
+      'API routes created',
+      'Sample data script ready',
+      'Ready for MongoDB connection'
     ]
   });
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Test server running on http://localhost:${PORT}`);
+  console.log(`Test server running on http://localhost:${PORT}`);
   console.log(`Visit http://localhost:${PORT}/test to verify setup`);
   console.log('');
   console.log('Next steps:');

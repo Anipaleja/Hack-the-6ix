@@ -289,11 +289,11 @@ process.on('SIGINT', () => {
 });
 
 server.listen(PORT, () => {
-  console.log(`🚀 Advanced Health Companion API Server is running on http://localhost:${PORT}`);
-  console.log(`🔗 WebSocket endpoint: ws://localhost:${PORT}/ws/health-monitor`);
-  console.log(`📊 API documentation: http://localhost:${PORT}/`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🏥 Real-time health monitoring: ACTIVE`);
-  console.log(`🤖 AI insights and ML models: READY`);
-  console.log(`💾 Database: ${mongoose.connection.readyState === 1 ? 'CONNECTED' : 'CONNECTING...'}`);
+  console.log(`Advanced Health Companion API Server is running on http://localhost:${PORT}`);
+  console.log(`WebSocket endpoint: ws://localhost:${PORT}/ws/health-monitor`);
+  console.log(`API documentation: http://localhost:${PORT}/`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Real-time health monitoring: ACTIVE`);
+  console.log(`AI insights and ML models: READY`);
+  console.log(`Database: ${mongoose.connection.readyState === 1 ? 'CONNECTED' : 'CONNECTING...'}`);
 });

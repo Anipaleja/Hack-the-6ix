@@ -8,7 +8,7 @@ async function testMongoConnection() {
     
     await mongoose.connect(process.env.MONGODB_URI);
     
-    console.log('✅ Successfully connected to MongoDB Atlas!');
+    console.log('Successfully connected to MongoDB Atlas!');
     console.log(`Database: ${mongoose.connection.name}`);
     console.log(`Host: ${mongoose.connection.host}`);
     
@@ -21,13 +21,13 @@ async function testMongoConnection() {
     console.log('Connection closed successfully');
     
   } catch (error) {
-    console.error('❌ MongoDB connection failed:');
-    console.error('Error:', error.message);
+    console.error('MongoDB connection failed:');
+    console.error(error.message);
     
-    if (error.message.includes('authentication')) {
-      console.error('\n💡 Tip: Check your username and password in the connection string');
-    } else if (error.message.includes('network')) {
-      console.error('\n💡 Tip: Check your internet connection and MongoDB Atlas network access settings');
+    if (error.message.includes('authentication failed')) {
+      console.error('\nTip: Check your username and password in the connection string');
+    } else if (error.message.includes('ENOTFOUND')) {
+      console.error('\nTip: Check your internet connection and MongoDB Atlas network access settings');
     }
     
     process.exit(1);

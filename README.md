@@ -1,22 +1,24 @@
-# Hack-the-6ix - Quantum-Secured Health Companion Backend
+# Hack-the-6### **Quantum Security Revolution**x - Quantum-Secured Health Companion Backend
 
-**🏆 Next-generation health companion with quantum encryption, blockchain integrity, and zero-knowledge privacy protection.**
+**Next-generation health companion with quantum encryption, blockchain integrity, and zero-knowledge privacy protection.**
 
-## � Why This Wins
+### **Quantum Security Revolution** - Quantum-Secured Health Companion Backend
 
-### **�🛡️ Quantum Security Revolution**
+**Next-generation health companion with quantum encryption, blockchain integrity, and zero-knowledge privacy protection.**
+
+### ** Quantum Security Revolution**
 - **Quantum-Enhanced Encryption**: Post-quantum cryptography protecting against future quantum computers
 - **Blockchain Data Integrity**: Immutable audit trail preventing any health data tampering
 - **Zero-Knowledge Proofs**: Access health insights without ever exposing raw data
 - **Homomorphic Analytics**: Perform AI analysis on encrypted data without decryption
 
-### **🤖 Advanced AI Integration** 
+### **Advanced AI Integration** 
 - **Real-Time Anomaly Detection**: Instant identification of concerning health patterns
 - **Predictive Health Modeling**: ML algorithms forecasting health risks days in advance
 - **Personalized AI Insights**: Contextual health recommendations based on individual patterns
 - **Voice Analysis Engine**: Extract medical insights from natural speech patterns
 
-### **⌚ Smart Wearable Integration**
+### **Smart Wearable Integration**
 - **Apple Watch/Fitbit Sync**: Secure encryption of all fitness device data
 - **Real-Time Health Monitoring**: WebSocket-based live health metric streaming
 - **Emergency Alert System**: Automatic notifications for critical health events
@@ -131,13 +133,13 @@ This backend is the secure core of an **quantum-protected health ecosystem**:
 ### Health Logs (VA Integration)
 - `GET /api/health-logs/user/:userId` - Get logs for user (timeline view)
 - `POST /api/health-logs/analyze` - Analyze transcription (testing)
-- `POST /api/health-logs` - Create health log (`report/create` → `report/finish`)
+- `POST /api/health-logs` - Create health log (`report/create` - `report/finish`)
 - `PUT /api/health-logs/:id` - Update health log
 - `DELETE /api/health-logs/:id` - Delete health log
 - `POST /api/health-logs/:id/process` - Mark log as processed with AI analysis
 - `GET /api/health-logs/analytics/:userId` - Get health analytics for user
 
-## 🏆 Hackathon Demo Highlights
+## Hackathon Demo Highlights
 
 ### **Live Quantum Encryption Demo**
 ```bash

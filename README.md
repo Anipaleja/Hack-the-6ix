@@ -163,10 +163,6 @@ curl -X POST http://localhost:3000/api/health-logs \
 
 ## Next Steps (TODOs)
 
-Based on your team's requirements:
-
-1. **Discuss with Isabel**: Determine exact log structure and required fields
-2. **Discuss with Swastik**: Define historical health data storage format
 3. **Add Authentication**: JWT tokens for API security
 4. **File Upload**: Support for audio file storage
 5. **AI Integration**: Connect transcription and health analysis services
@@ -174,7 +170,7 @@ Based on your team's requirements:
 
 ## Team Integration
 
-- **Backend Setup**: ✅ Complete (MongoDB + API routes)
-- **Sample Logs**: ✅ Generated via script
-- **Isabel Discussion**: 📋 Pending (log structure requirements)
-- **Swastik Discussion**: 📋 Pending (historical data format)
+- **Backend Setup**: Complete (MongoDB + API routes)
+- **Sample Logs**: Generated via script
+- **Isabel Discussion**: Pending (log structure requirements)
+- **Swastik Discussion**: Pending (historical data format)

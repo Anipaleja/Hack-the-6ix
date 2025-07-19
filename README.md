@@ -163,10 +163,10 @@ curl -X POST http://localhost:3000/api/health-logs \
 
 ## Next Steps (TODOs)
 
-3. **Add Authentication**: JWT tokens for API security
-4. **File Upload**: Support for audio file storage
-5. **AI Integration**: Connect transcription and health analysis services
-6. **Real-time Features**: WebSocket support for live device communication
+1. **Add Authentication**: JWT tokens for API security
+2. **File Upload**: Support for audio file storage
+3. **AI Integration**: Connect transcription and health analysis services
+4. **Real-time Features**: WebSocket support for live device communication
 
 ## Team Integration
 

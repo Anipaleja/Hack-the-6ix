@@ -1,0 +1,3 @@
+[submodule "CLARA-front-end"]
+	path = CLARA-front-end
+	url = https://github.com/issixe/CLARA-front-end.git

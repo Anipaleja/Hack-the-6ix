@@ -1,8 +1,5 @@
 # Hack-the-6ix
 
-### **Quantum Security Revolution** - Quantum-Secured Health Companion Backend
-
-**Next-generation health companion with quantum encryption, blockchain integrity, and zero-knowledge privacy protection.**
 
 ### **Quantum Security Revolution** - Quantum-Secured Health Companion Backend
 

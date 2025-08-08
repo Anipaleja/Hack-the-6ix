@@ -58,27 +58,27 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/vivirion'
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('✅ Connected to MongoDB'))
-.catch(err => console.error('❌ MongoDB connection error:', err));
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => console.error('MongoDB connection error:', err));
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
-  console.log('👤 User connected:', socket.id);
+  console.log('User connected:', socket.id);
   
   // Join user-specific room based on userId
   socket.on('join', (userId) => {
     socket.join(userId);
-    console.log(`👤 User ${userId} joined their room`);
+    console.log(`User ${userId} joined their room`);
   });
 
   // Join family room for shared data
   socket.on('joinFamily', (familyId) => {
     socket.join(`family_${familyId}`);
-    console.log(`👨‍👩‍👧‍👦 User joined family room: ${familyId}`);
+    console.log(`User joined family room: ${familyId}`);
   });
 
   socket.on('disconnect', () => {
-    console.log('👤 User disconnected:', socket.id);
+    console.log('User disconnected:', socket.id);
   });
 });
 
@@ -108,7 +108,7 @@ app.get('/api/health', (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('❌ Error:', err.stack);
+  console.error('Error:', err.stack);
   res.status(500).json({ 
     message: 'Internal server error',
     error: process.env.NODE_ENV === 'development' ? err.message : {}
@@ -138,7 +138,7 @@ cron.schedule('* * * * *', async () => {
 cron.schedule('*/30 * * * *', async () => {
   try {
     // Sync health data for active users
-    console.log('🔄 Running scheduled health data sync...');
+    console.log('Running scheduled health data sync...');
   } catch (error) {
     console.error('Error in health data sync:', error);
   }
@@ -157,9 +157,9 @@ cron.schedule('0 2 * * *', async () => {
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
-  console.log(`📱 Socket.IO ready for real-time connections`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
+  console.log(`Socket.IO ready for real-time connections`);
 });
 
 module.exports = { app, io };

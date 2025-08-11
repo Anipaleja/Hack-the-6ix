@@ -4,6 +4,8 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Toaster } from 'react-hot-toast';
 import { HelmetProvider } from 'react-helmet-async';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 // Import components
 import Layout from './components/Layout/Layout';
@@ -144,66 +146,68 @@ function App() {
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Router>
-            <SocketProvider>
-              <div className="App">
-                <Routes>
-                  {/* Public routes */}
-                  <Route 
-                    path="/login" 
-                    element={!user ? <Login /> : <Navigate to="/dashboard" />} 
-                  />
-                  <Route 
-                    path="/register" 
-                    element={!user ? <Register /> : <Navigate to="/dashboard" />} 
-                  />
-                  
-                  {/* Protected routes */}
-                  <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-                    <Route index element={<Navigate to="/dashboard" />} />
-                    <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="medications" element={<Medications />} />
-                    <Route path="health-data" element={<HealthData />} />
-                    <Route path="ai-assistant" element={<AIAssistant />} />
-                    <Route path="family" element={<Family />} />
-                    <Route path="profile" element={<Profile />} />
-                    <Route path="settings" element={<Settings />} />
-                  </Route>
-                  
-                  {/* Catch all route */}
-                  <Route path="*" element={<Navigate to="/dashboard" />} />
-                </Routes>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Router>
+              <SocketProvider>
+                <div className="App">
+                  <Routes>
+                    {/* Public routes */}
+                    <Route 
+                      path="/login" 
+                      element={!user ? <Login /> : <Navigate to="/dashboard" />} 
+                    />
+                    <Route 
+                      path="/register" 
+                      element={!user ? <Register /> : <Navigate to="/dashboard" />} 
+                    />
+                    
+                    {/* Protected routes */}
+                    <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                      <Route index element={<Navigate to="/dashboard" />} />
+                      <Route path="dashboard" element={<Dashboard />} />
+                      <Route path="medications" element={<Medications />} />
+                      <Route path="health-data" element={<HealthData />} />
+                      <Route path="ai-assistant" element={<AIAssistant />} />
+                      <Route path="family" element={<Family />} />
+                      <Route path="profile" element={<Profile />} />
+                      <Route path="settings" element={<Settings />} />
+                    </Route>
+                    
+                    {/* Catch all route */}
+                    <Route path="*" element={<Navigate to="/dashboard" />} />
+                  </Routes>
 
-                {/* Global toast notifications */}
-                <Toaster
-                  position="top-right"
-                  toastOptions={{
-                    duration: 4000,
-                    style: {
-                      background: '#363636',
-                      color: '#fff',
-                      borderRadius: '8px',
-                    },
-                    success: {
-                      iconTheme: {
-                        primary: '#16a34a',
-                        secondary: '#fff',
+                  {/* Global toast notifications */}
+                  <Toaster
+                    position="top-right"
+                    toastOptions={{
+                      duration: 4000,
+                      style: {
+                        background: '#363636',
+                        color: '#fff',
+                        borderRadius: '8px',
                       },
-                    },
-                    error: {
-                      iconTheme: {
-                        primary: '#dc2626',
-                        secondary: '#fff',
+                      success: {
+                        iconTheme: {
+                          primary: '#16a34a',
+                          secondary: '#fff',
+                        },
                       },
-                    },
-                  }}
-                />
-              </div>
-            </SocketProvider>
-          </Router>
-        </ThemeProvider>
+                      error: {
+                        iconTheme: {
+                          primary: '#dc2626',
+                          secondary: '#fff',
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              </SocketProvider>
+            </Router>
+          </ThemeProvider>
+        </LocalizationProvider>
       </QueryClientProvider>
     </HelmetProvider>
   );

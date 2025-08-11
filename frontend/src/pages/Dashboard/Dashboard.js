@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Grid,
@@ -15,6 +15,9 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   IconButton,
+  Alert,
+  Divider,
+  Badge
 } from '@mui/material';
 import {
   Medication,
@@ -25,6 +28,10 @@ import {
   Schedule,
   Warning,
   TrendingUp,
+  AccessTime,
+  LocalPharmacy,
+  NotificationImportant,
+  PlayArrow
 } from '@mui/icons-material';
 import { useAuthStore } from '../../store/authStore';
 import { useSocket } from '../../contexts/SocketContext';
@@ -32,207 +39,407 @@ import { useSocket } from '../../contexts/SocketContext';
 const Dashboard = () => {
   const { user } = useAuthStore();
   const { isConnected } = useSocket();
+  const [dashboardData, setDashboardData] = useState({
+    medications: {
+      total: 0,
+      active: 0,
+      dueSoon: [],
+      overdue: [],
+      adherenceRate: 0
+    },
+    healthData: {
+      lastSyncDate: null,
+      recentMetrics: []
+    },
+    family: {
+      memberCount: 0,
+      recentAlerts: []
+    },
+    aiQueries: {
+      totalQueries: 0,
+      recentQueries: []
+    }
+  });
+  const [loading, setLoading] = useState(true);
 
-  // Mock data - in a real app, this would come from API calls
-  const stats = {
-    medicationsToday: 3,
-    medicationsTaken: 1,
-    upcomingAlarms: 2,
-    healthScore: 85,
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const response = await fetch('/api/dashboard', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDashboardData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const upcomingMedications = [
-    {
-      id: 1,
-      name: 'Lisinopril',
-      dosage: '10mg',
-      time: '14:00',
-      status: 'upcoming',
-    },
-    {
-      id: 2,
-      name: 'Metformin',
-      dosage: '500mg',
-      time: '18:00',
-      status: 'upcoming',
-    },
-  ];
+  const handleMarkTaken = async (medicationId) => {
+    try {
+      const response = await fetch(`/api/medications/${medicationId}/take`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.ok) {
+        fetchDashboardData(); // Refresh data
+      }
+    } catch (error) {
+      console.error('Error marking medication as taken:', error);
+    }
+  };
 
-  const recentActivities = [
-    {
-      id: 1,
-      type: 'medication',
-      message: 'Took Aspirin 81mg',
-      time: '2 hours ago',
-      icon: <CheckCircle color="success" />,
-    },
-    {
-      id: 2,
-      type: 'health_data',
-      message: 'Blood pressure recorded: 120/80',
-      time: '4 hours ago',
-      icon: <Timeline color="primary" />,
-    },
-    {
-      id: 3,
-      type: 'ai_query',
-      message: 'Asked about medication interactions',
-      time: '1 day ago',
-      icon: <Psychology color="secondary" />,
-    },
-  ];
-
-  const adherenceRate = (stats.medicationsTaken / stats.medicationsToday) * 100;
+  const getTimeUntilDose = (doseTime) => {
+    const now = new Date();
+    const dose = new Date(doseTime);
+    const diffMs = dose - now;
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 0) return 'Overdue';
+    if (diffMins < 60) return `${diffMins}m`;
+    if (diffMins < 1440) return `${Math.floor(diffMins/60)}h ${diffMins%60}m`;
+    return `${Math.floor(diffMins/1440)}d`;
+  };
 
   return (
     <Box>
-      {/* Welcome section */}
+      {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Welcome back, {user?.firstName}! 👋
+          Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {user?.name?.split(' ')[0]}! 👋
         </Typography>
         <Typography variant="body1" color="text.secondary">
           Here's your health overview for today
         </Typography>
+        {!isConnected && (
+          <Alert severity="warning" sx={{ mt: 2 }}>
+            Connection lost. Some features may not work properly.
+          </Alert>
+        )}
       </Box>
 
-      <Grid container spacing={3}>
-        {/* Quick stats */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
-                  <Medication />
-                </Avatar>
-                <Typography variant="h6">Medications</Typography>
-              </Box>
-              <Typography variant="h4" component="div">
-                {stats.medicationsTaken}/{stats.medicationsToday}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Taken today
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={adherenceRate}
-                sx={{ mt: 1 }}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
+      {loading ? (
+        <LinearProgress sx={{ mb: 3 }} />
+      ) : (
+        <>
+          {/* Quick Stats */}
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid item xs={12} md={3}>
+              <Card sx={{ bgcolor: 'primary.main', color: 'white' }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box>
+                      <Typography variant="h4" component="div">
+                        {dashboardData.medications.active}
+                      </Typography>
+                      <Typography variant="body2">
+                        Active Medications
+                      </Typography>
+                    </Box>
+                    <LocalPharmacy sx={{ fontSize: 40, opacity: 0.8 }} />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Avatar sx={{ bgcolor: 'warning.main', mr: 2 }}>
-                  <Schedule />
-                </Avatar>
-                <Typography variant="h6">Upcoming</Typography>
-              </Box>
-              <Typography variant="h4" component="div">
-                {stats.upcomingAlarms}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Medications due
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+            <Grid item xs={12} md={3}>
+              <Card sx={{ bgcolor: 'success.main', color: 'white' }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box>
+                      <Typography variant="h4" component="div">
+                        {Math.round(dashboardData.medications.adherenceRate)}%
+                      </Typography>
+                      <Typography variant="body2">
+                        Adherence Rate
+                      </Typography>
+                    </Box>
+                    <TrendingUp sx={{ fontSize: 40, opacity: 0.8 }} />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Avatar sx={{ bgcolor: 'success.main', mr: 2 }}>
-                  <TrendingUp />
-                </Avatar>
-                <Typography variant="h6">Health Score</Typography>
-              </Box>
-              <Typography variant="h4" component="div">
-                {stats.healthScore}%
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Overall wellness
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+            <Grid item xs={12} md={3}>
+              <Card sx={{ bgcolor: dashboardData.medications.dueSoon.length > 0 ? 'warning.main' : 'info.main', color: 'white' }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box>
+                      <Typography variant="h4" component="div">
+                        {dashboardData.medications.dueSoon.length}
+                      </Typography>
+                      <Typography variant="body2">
+                        Due Soon
+                      </Typography>
+                    </Box>
+                    <Badge badgeContent={dashboardData.medications.dueSoon.length} color="error">
+                      <Schedule sx={{ fontSize: 40, opacity: 0.8 }} />
+                    </Badge>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Avatar sx={{ bgcolor: 'secondary.main', mr: 2 }}>
-                  <Family />
-                </Avatar>
-                <Typography variant="h6">Connection</Typography>
-              </Box>
-              <Chip
-                label={isConnected ? 'Connected' : 'Disconnected'}
-                color={isConnected ? 'success' : 'error'}
-                variant="outlined"
-              />
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                Real-time sync
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+            <Grid item xs={12} md={3}>
+              <Card sx={{ bgcolor: 'secondary.main', color: 'white' }}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box>
+                      <Typography variant="h4" component="div">
+                        {dashboardData.family.memberCount}
+                      </Typography>
+                      <Typography variant="body2">
+                        Family Members
+                      </Typography>
+                    </Box>
+                    <Family sx={{ fontSize: 40, opacity: 0.8 }} />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
 
-        {/* Upcoming medications */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6">Upcoming Medications</Typography>
-                <Button size="small" href="/medications">
-                  View All
-                </Button>
-              </Box>
-              <List>
-                {upcomingMedications.map((med) => (
-                  <ListItem key={med.id} divider>
-                    <ListItemAvatar>
-                      <Avatar sx={{ bgcolor: 'primary.light' }}>
-                        <Medication />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={`${med.name} ${med.dosage}`}
-                      secondary={`Due at ${med.time}`}
+          {/* Overdue Medications Alert */}
+          {dashboardData.medications.overdue.length > 0 && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              <Typography variant="subtitle2" gutterBottom>
+                ⚠️ Overdue Medications ({dashboardData.medications.overdue.length})
+              </Typography>
+              <Typography variant="body2">
+                {dashboardData.medications.overdue.map(med => med.commonName).join(', ')} - Please take as soon as possible
+              </Typography>
+            </Alert>
+          )}
+
+          <Grid container spacing={3}>
+            {/* Upcoming Medications */}
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Schedule color="primary" />
+                    Upcoming Medications
+                  </Typography>
+                  
+                  {dashboardData.medications.dueSoon.length > 0 ? (
+                    <List>
+                      {dashboardData.medications.dueSoon.slice(0, 5).map((medication, index) => (
+                        <ListItem key={index} divider={index < Math.min(dashboardData.medications.dueSoon.length, 5) - 1}>
+                          <ListItemAvatar>
+                            <Avatar sx={{ bgcolor: 'primary.light' }}>
+                              💊
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={medication.commonName}
+                            secondary={
+                              <Box>
+                                <Typography variant="caption" display="block">
+                                  {medication.dosage.amount} {medication.dosage.unit}
+                                </Typography>
+                                <Chip
+                                  size="small"
+                                  label={getTimeUntilDose(medication.nextDose)}
+                                  color={getTimeUntilDose(medication.nextDose) === 'Overdue' ? 'error' : 'warning'}
+                                  variant="outlined"
+                                />
+                              </Box>
+                            }
+                          />
+                          <ListItemSecondaryAction>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              color="success"
+                              onClick={() => handleMarkTaken(medication._id)}
+                              startIcon={<CheckCircle />}
+                            >
+                              Take
+                            </Button>
+                          </ListItemSecondaryAction>
+                        </ListItem>
+                      ))}
+                    </List>
+                  ) : (
+                    <Box sx={{ textAlign: 'center', py: 3 }}>
+                      <CheckCircle sx={{ fontSize: 48, color: 'success.main', mb: 1 }} />
+                      <Typography variant="body1" color="text.secondary">
+                        All caught up! No medications due soon.
+                      </Typography>
+                    </Box>
+                  )}
+
+                  <Divider sx={{ my: 2 }} />
+                  <Button variant="outlined" fullWidth href="/medications">
+                    View All Medications
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Recent Activity */}
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Timeline color="primary" />
+                    Recent Activity
+                  </Typography>
+                  
+                  <List>
+                    {dashboardData.aiQueries.recentQueries.slice(0, 3).map((query, index) => (
+                      <ListItem key={index} divider={index < 2}>
+                        <ListItemAvatar>
+                          <Avatar sx={{ bgcolor: 'secondary.light' }}>
+                            <Psychology />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary="AI Health Query"
+                          secondary={`${query.query.substring(0, 50)}...`}
+                        />
+                        <Typography variant="caption" color="text.secondary">
+                          {new Date(query.createdAt).toLocaleDateString()}
+                        </Typography>
+                      </ListItem>
+                    ))}
+                    
+                    {dashboardData.healthData.recentMetrics.slice(0, 2).map((metric, index) => (
+                      <ListItem key={`metric-${index}`} divider>
+                        <ListItemAvatar>
+                          <Avatar sx={{ bgcolor: 'info.light' }}>
+                            📊
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={`${metric.type} recorded`}
+                          secondary={`${metric.value} ${metric.unit}`}
+                        />
+                        <Typography variant="caption" color="text.secondary">
+                          {new Date(metric.recordedAt).toLocaleDateString()}
+                        </Typography>
+                      </ListItem>
+                    ))}
+                  </List>
+
+                  <Divider sx={{ my: 2 }} />
+                  <Button variant="outlined" fullWidth href="/ai-assistant">
+                    Ask AI Assistant
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Health Overview */}
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <TrendingUp color="primary" />
+                    Health Overview
+                  </Typography>
+                  
+                  <Box sx={{ mb: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                      <Typography variant="body2">Medication Adherence</Typography>
+                      <Typography variant="body2" fontWeight="medium">
+                        {Math.round(dashboardData.medications.adherenceRate)}%
+                      </Typography>
+                    </Box>
+                    <LinearProgress
+                      variant="determinate"
+                      value={dashboardData.medications.adherenceRate}
+                      sx={{
+                        height: 8,
+                        borderRadius: 4,
+                        bgcolor: 'grey.200',
+                        '& .MuiLinearProgress-bar': {
+                          bgcolor: dashboardData.medications.adherenceRate >= 80 ? 'success.main' : 
+                                  dashboardData.medications.adherenceRate >= 60 ? 'warning.main' : 'error.main'
+                        }
+                      }}
                     />
-                    <ListItemSecondaryAction>
-                      <Chip
-                        label={med.status}
-                        color="warning"
-                        size="small"
-                        variant="outlined"
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                ))}
-              </List>
-              {upcomingMedications.length === 0 && (
-                <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
-                  No upcoming medications
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
+                  </Box>
 
-        {/* Recent activities */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6">Recent Activities</Typography>
-              </Box>
-              <List>
-                {recentActivities.map((activity) => (
-                  <ListItem key={activity.id} divider>
+                  {dashboardData.healthData.lastSyncDate && (
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        Last Health Data Sync
+                      </Typography>
+                      <Typography variant="body1">
+                        {new Date(dashboardData.healthData.lastSyncDate).toLocaleDateString()}
+                      </Typography>
+                    </Box>
+                  )}
+
+                  <Divider sx={{ my: 2 }} />
+                  <Button variant="outlined" fullWidth href="/health-data">
+                    View Health Data
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Family Dashboard */}
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Family color="primary" />
+                    Family Updates
+                  </Typography>
+                  
+                  {dashboardData.family.recentAlerts.length > 0 ? (
+                    <List>
+                      {dashboardData.family.recentAlerts.slice(0, 3).map((alert, index) => (
+                        <ListItem key={index} divider={index < 2}>
+                          <ListItemAvatar>
+                            <Avatar sx={{ bgcolor: alert.type === 'medication' ? 'warning.light' : 'info.light' }}>
+                              {alert.type === 'medication' ? <NotificationImportant /> : <Family />}
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={alert.message}
+                            secondary={new Date(alert.timestamp).toLocaleString()}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  ) : (
+                    <Box sx={{ textAlign: 'center', py: 3 }}>
+                      <Family sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
+                      <Typography variant="body2" color="text.secondary">
+                        No recent family updates
+                      </Typography>
+                    </Box>
+                  )}
+
+                  <Divider sx={{ my: 2 }} />
+                  <Button variant="outlined" fullWidth href="/family">
+                    View Family Dashboard
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </>
+      )}
+    </Box>
+  );
+};
+
+export default Dashboard;
                     <ListItemAvatar>
                       <Avatar sx={{ bgcolor: 'transparent' }}>
                         {activity.icon}

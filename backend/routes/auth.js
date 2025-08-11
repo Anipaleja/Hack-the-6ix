@@ -1,10 +1,17 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
-const User = require('../models/User');
-const Family = require('../models/Family');
+const User = require('../../models/AuthUser');
+const Family = require('../../models/Family');
 
 const router = express.Router();
+
+console.log('Auth routes module loaded successfully');
+
+// Test route
+router.get('/test', (req, res) => {
+  res.json({ message: 'Auth routes are working!' });
+});
 
 // Generate JWT token
 const generateToken = (userId) => {
@@ -376,4 +383,5 @@ router.post('/logout', authenticateToken, async (req, res) => {
   }
 });
 
-module.exports = { router, authenticateToken };
+module.exports = router;
+module.exports.authenticateToken = authenticateToken;

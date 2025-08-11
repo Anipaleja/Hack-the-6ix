@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
+const authUserSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ['client', 'doctor', 'next_of_kin'],
-    required: true
+    default: 'client'
   },
   phone: {
     type: String,
@@ -133,7 +133,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+authUserSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   
   try {
@@ -146,12 +146,12 @@ userSchema.pre('save', async function(next) {
 });
 
 // Compare password method
-userSchema.methods.comparePassword = async function(candidatePassword) {
+authUserSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Remove password from JSON output
-userSchema.methods.toJSON = function() {
+authUserSchema.methods.toJSON = function() {
   const user = this.toObject();
   delete user.password;
   delete user.healthIntegrations.appleHealth.accessToken;
@@ -161,17 +161,17 @@ userSchema.methods.toJSON = function() {
 };
 
 // Get full name
-userSchema.virtual('fullName').get(function() {
+authUserSchema.virtual('fullName').get(function() {
   return `${this.firstName} ${this.lastName}`;
 });
 
 // Check if user can access family data
-userSchema.methods.canAccessFamilyData = function() {
+authUserSchema.methods.canAccessFamilyData = function() {
   return this.familyId !== null;
 };
 
-// Get display role
-userSchema.virtual('displayRole').get(function() {
+// Get user's role display name
+authUserSchema.virtual('roleDisplay').get(function() {
   const roleMap = {
     'client': 'Patient',
     'doctor': 'Doctor',
@@ -180,4 +180,4 @@ userSchema.virtual('displayRole').get(function() {
   return roleMap[this.role] || this.role;
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('AuthUser', authUserSchema);

@@ -7,6 +7,7 @@ const http = require('http');
 require('dotenv').config();
 
 // Import routes - Original
+const authRoutes = require('./backend/routes/auth');
 const healthLogRoutes = require('./routes/healthLogs');
 const userRoutes = require('./routes/users');
 const healthTimerRoutes = require('./routes/healthTimers');
@@ -74,6 +75,9 @@ mongoose.connect(process.env.MONGODB_URI)
   console.error('Make sure your MongoDB Atlas password is correct in the .env file');
   process.exit(1);
 });
+
+// Routes - Authentication
+app.use('/api/auth', authRoutes);
 
 // Routes - Original
 app.use('/api/health-logs', healthLogRoutes);

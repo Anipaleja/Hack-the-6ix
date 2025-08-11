@@ -12,11 +12,11 @@ require('dotenv').config();
 
 // Import routes
 const authRoutes = require('./routes/auth');
-const medicationRoutes = require('./routes/medications');
-const queryRoutes = require('./routes/queries');
-const medicalInfoRoutes = require('./routes/medicalInfo');
-const healthDataRoutes = require('./routes/healthData');
-const notificationRoutes = require('./routes/notifications');
+// const medicationRoutes = require('./routes/medications');
+// const queryRoutes = require('./routes/queries'); // Temporarily disabled due to missing OpenAI key
+// const medicalInfoRoutes = require('./routes/medicalInfo');
+// const healthDataRoutes = require('./routes/healthData');
+// const notificationRoutes = require('./routes/notifications');
 
 // Import services
 const MedicationAlarmService = require('./services/medicationAlarmService');
@@ -89,12 +89,14 @@ app.use((req, res, next) => {
 });
 
 // Routes
+console.log('Mounting auth routes...');
 app.use('/api/auth', authRoutes);
-app.use('/api/medications', medicationRoutes);
-app.use('/api/queries', queryRoutes);
-app.use('/api/medical-info', medicalInfoRoutes);
-app.use('/api/health-data', healthDataRoutes);
-app.use('/api/notifications', notificationRoutes);
+console.log('Auth routes mounted');
+// app.use('/api/medications', medicationRoutes);
+// app.use('/api/queries', queryRoutes); // Temporarily disabled due to missing OpenAI key
+// app.use('/api/medical-info', medicalInfoRoutes);
+// app.use('/api/health-data', healthDataRoutes);
+// app.use('/api/notifications', notificationRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

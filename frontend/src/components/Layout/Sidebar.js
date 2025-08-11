@@ -17,7 +17,7 @@ import {
   Medication,
   Timeline,
   Psychology,
-  Family,
+  Groups,
   Person,
   Settings,
   LocalHospital,
@@ -49,7 +49,7 @@ const menuItems = [
   },
   {
     text: 'Family',
-    icon: <Family />,
+    icon: <Groups />,
     path: '/family',
   },
 ];

@@ -22,7 +22,7 @@ import {
 import {
   Medication,
   Timeline,
-  Family,
+  Groups,
   Psychology,
   CheckCircle,
   Schedule,
@@ -203,7 +203,7 @@ const Dashboard = () => {
                         Family Members
                       </Typography>
                     </Box>
-                    <Family sx={{ fontSize: 40, opacity: 0.8 }} />
+                    <Groups sx={{ fontSize: 40, opacity: 0.8 }} />
                   </Box>
                 </CardContent>
               </Card>
@@ -396,7 +396,7 @@ const Dashboard = () => {
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Family color="primary" />
+                    <Groups color="primary" />
                     Family Updates
                   </Typography>
                   
@@ -406,7 +406,7 @@ const Dashboard = () => {
                         <ListItem key={index} divider={index < 2}>
                           <ListItemAvatar>
                             <Avatar sx={{ bgcolor: alert.type === 'medication' ? 'warning.light' : 'info.light' }}>
-                              {alert.type === 'medication' ? <NotificationImportant /> : <Family />}
+                              {alert.type === 'medication' ? <NotificationImportant /> : <Groups />}
                             </Avatar>
                           </ListItemAvatar>
                           <ListItemText
@@ -418,7 +418,7 @@ const Dashboard = () => {
                     </List>
                   ) : (
                     <Box sx={{ textAlign: 'center', py: 3 }}>
-                      <Family sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
+                      <Groups sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
                       <Typography variant="body2" color="text.secondary">
                         No recent family updates
                       </Typography>
@@ -435,84 +435,6 @@ const Dashboard = () => {
           </Grid>
         </>
       )}
-    </Box>
-  );
-};
-
-export default Dashboard;
-                    <ListItemAvatar>
-                      <Avatar sx={{ bgcolor: 'transparent' }}>
-                        {activity.icon}
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={activity.message}
-                      secondary={activity.time}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Quick actions */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Quick Actions
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Button
-                    variant="contained"
-                    fullWidth
-                    startIcon={<Medication />}
-                    href="/medications"
-                    sx={{ py: 1.5 }}
-                  >
-                    Add Medication
-                  </Button>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    startIcon={<Timeline />}
-                    href="/health-data"
-                    sx={{ py: 1.5 }}
-                  >
-                    Log Health Data
-                  </Button>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    startIcon={<Psychology />}
-                    href="/ai-assistant"
-                    sx={{ py: 1.5 }}
-                  >
-                    Ask AI Assistant
-                  </Button>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    startIcon={<Family />}
-                    href="/family"
-                    sx={{ py: 1.5 }}
-                  >
-                    Family Dashboard
-                  </Button>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
     </Box>
   );
 };

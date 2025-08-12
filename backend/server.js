@@ -12,7 +12,7 @@ require('dotenv').config();
 
 // Import routes
 const authRoutes = require('./routes/auth');
-// const medicationRoutes = require('./routes/medications');
+const medicationRoutes = require('./routes/medications');
 // const queryRoutes = require('./routes/queries'); // Temporarily disabled due to missing OpenAI key
 // const medicalInfoRoutes = require('./routes/medicalInfo');
 // const healthDataRoutes = require('./routes/healthData');
@@ -92,7 +92,9 @@ app.use((req, res, next) => {
 console.log('Mounting auth routes...');
 app.use('/api/auth', authRoutes);
 console.log('Auth routes mounted');
-// app.use('/api/medications', medicationRoutes);
+console.log('Mounting medications routes...');
+app.use('/api/medications', medicationRoutes);
+console.log('Medications routes mounted');
 // app.use('/api/queries', queryRoutes); // Temporarily disabled due to missing OpenAI key
 // app.use('/api/medical-info', medicalInfoRoutes);
 // app.use('/api/health-data', healthDataRoutes);

@@ -6,7 +6,7 @@ const Settings = () => {
   return (
     <Box>
       <Typography variant="h4" component="h1" gutterBottom>
-        ⚙️ Settings
+        Settings
       </Typography>
 
       <Card>

@@ -30,7 +30,7 @@ export const SocketProvider = ({ children }) => {
 
       // Connection event handlers
       newSocket.on('connect', () => {
-        console.log('✅ Connected to server');
+        console.log('Connected to server');
         setIsConnected(true);
         
         // Join user-specific room
@@ -43,7 +43,7 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on('disconnect', () => {
-        console.log('❌ Disconnected from server');
+        console.log('Disconnected from server');
         setIsConnected(false);
       });
 
@@ -54,7 +54,7 @@ export const SocketProvider = ({ children }) => {
 
       // Medication alarm handlers
       newSocket.on('medicationAlarm', (data) => {
-        toast.success(`💊 ${data.message}`, {
+        toast.success(`Medication: ${data.message}`, {
           duration: 10000,
           position: 'top-center',
           style: {
@@ -77,7 +77,7 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on('medicationReminder', (data) => {
-        toast(`🔔 Reminder ${data.reminderNumber}/${data.maxReminders}: Time for ${data.medication.commonName}`, {
+        toast(`Reminder ${data.reminderNumber}/${data.maxReminders}: Time for ${data.medication.commonName}`, {
           duration: 8000,
           position: 'top-center',
           style: {
@@ -89,26 +89,26 @@ export const SocketProvider = ({ children }) => {
 
       // Health data handlers
       newSocket.on('healthDataAdded', (data) => {
-        toast.success(`📊 New ${data.dataType} reading recorded: ${data.value} ${data.unit}`);
+        toast.success(`Health Data: New ${data.dataType} reading recorded: ${data.value} ${data.unit}`);
       });
 
       // Family notifications
       newSocket.on('familyMedicationAlert', (data) => {
-        toast.error(`🚨 ${data.patient.name} missed their ${data.medication.commonName} dose`, {
+        toast.error(`Alert: ${data.patient.name} missed their ${data.medication.commonName} dose`, {
           duration: 8000,
           position: 'top-center',
         });
       });
 
       newSocket.on('medicationTaken', (data) => {
-        toast.success(`✅ ${data.patient.firstName} took their ${data.medication.commonName}`, {
+        toast.success(`${data.patient.firstName} took their ${data.medication.commonName}`, {
           duration: 5000,
         });
       });
 
       // Emergency alerts
       newSocket.on('emergencyAlert', (data) => {
-        toast.error(`🚨 EMERGENCY: ${data.message}`, {
+        toast.error(`EMERGENCY: ${data.message}`, {
           duration: 15000,
           position: 'top-center',
           style: {
@@ -130,11 +130,11 @@ export const SocketProvider = ({ children }) => {
 
       // AI query responses
       newSocket.on('queryResponse', (data) => {
-        toast.success('🤖 AI Assistant has responded to your question');
+        toast.success('AI Assistant has responded to your question');
       });
 
       newSocket.on('queryError', (data) => {
-        toast.error('❌ Failed to process your question. Please try again.');
+        toast.error('Failed to process your question. Please try again.');
       });
 
       // General notifications
@@ -145,7 +145,6 @@ export const SocketProvider = ({ children }) => {
           toast.error(`${title}: ${body}`, { duration: 8000 });
         } else {
           toast(body, { 
-            icon: '📱',
             duration: 5000 
           });
         }

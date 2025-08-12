@@ -8,6 +8,11 @@ require('dotenv').config();
 
 // Import routes - Original
 const authRoutes = require('./backend/routes/auth');
+console.log('✅ Auth routes imported successfully');
+
+const medicationRoutes = require('./backend/routes/medications');
+console.log('✅ Medication routes imported successfully');
+
 const healthLogRoutes = require('./routes/healthLogs');
 const userRoutes = require('./routes/users');
 const healthTimerRoutes = require('./routes/healthTimers');
@@ -78,6 +83,10 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Routes - Authentication
 app.use('/api/auth', authRoutes);
+console.log('✅ Auth routes mounted at /api/auth');
+
+app.use('/api/medications', medicationRoutes);
+console.log('✅ Medication routes mounted at /api/medications');
 
 // Routes - Original
 app.use('/api/health-logs', healthLogRoutes);

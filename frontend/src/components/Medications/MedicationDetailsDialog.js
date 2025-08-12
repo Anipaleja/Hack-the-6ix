@@ -45,8 +45,10 @@ import {
   Note
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useAuthStore } from '../../store/authStore';
 
 const MedicationDetailsDialog = ({ open, onClose, medication, onUpdate }) => {
+  const { token } = useAuthStore();
   const [activeTab, setActiveTab] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
   const [adherenceHistory, setAdherenceHistory] = useState([]);
@@ -63,7 +65,7 @@ const MedicationDetailsDialog = ({ open, onClose, medication, onUpdate }) => {
     try {
       const response = await fetch(`/api/medications/${medication._id}/adherence-history`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
@@ -89,7 +91,7 @@ const MedicationDetailsDialog = ({ open, onClose, medication, onUpdate }) => {
       const response = await fetch(`/api/medications/${medication._id}/pause`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ pauseReason: 'Paused by user' })
@@ -111,7 +113,7 @@ const MedicationDetailsDialog = ({ open, onClose, medication, onUpdate }) => {
       const response = await fetch(`/api/medications/${medication._id}/resume`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
@@ -133,7 +135,7 @@ const MedicationDetailsDialog = ({ open, onClose, medication, onUpdate }) => {
       const response = await fetch(`/api/medications/${medication._id}/notes`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -155,10 +157,10 @@ const MedicationDetailsDialog = ({ open, onClose, medication, onUpdate }) => {
   const handleMarkTaken = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/medications/${medication._id}/take`, {
+      const response = await fetch(`/api/medications/${medication._id}/take-dose`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {

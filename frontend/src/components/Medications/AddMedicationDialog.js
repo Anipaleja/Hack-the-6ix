@@ -39,8 +39,10 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { useAuthStore } from '../../store/authStore';
 
 const AddMedicationDialog = ({ open, onClose, onSuccess }) => {
+  const { token } = useAuthStore();
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -199,14 +201,23 @@ const AddMedicationDialog = ({ open, onClose, onSuccess }) => {
     setLoading(true);
     setError('');
 
+    if (!token) {
+      setError('You must be logged in to add medications');
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/medications', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          patient: useAuthStore.getState().user._id
+        })
       });
 
       if (response.ok) {

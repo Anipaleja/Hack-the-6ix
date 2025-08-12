@@ -86,6 +86,16 @@ const Register = () => {
         <CardContent>
           {/* Header */}
           <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Box sx={{ mb: 2 }}>
+              <img 
+                src="/logo.png" 
+                alt="Vivirion Health Logo" 
+                style={{ 
+                  height: '60px', 
+                  width: 'auto'
+                }} 
+              />
+            </Box>
             <Typography
               variant="h4"
               component="h1"

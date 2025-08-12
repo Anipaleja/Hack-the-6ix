@@ -127,7 +127,7 @@ const MedicationCard = ({ medication, onClick, onMarkTaken, isPaused = false }) 
                 fontSize: '1.2rem'
               }}
             >
-              💊
+              <LocalPharmacy />
             </Avatar>
             <Box>
               <Typography variant="h6" component="div" noWrap>

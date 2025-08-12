@@ -117,10 +117,10 @@ const Dashboard = () => {
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {user?.name?.split(' ')[0]}! 👋
+          Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {user?.name?.split(' ')[0]}!
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Here's your health overview for today
+          Your comprehensive health management dashboard
         </Typography>
         {!isConnected && (
           <Alert severity="warning" sx={{ mt: 2 }}>
@@ -214,7 +214,7 @@ const Dashboard = () => {
           {dashboardData.medications.overdue.length > 0 && (
             <Alert severity="error" sx={{ mb: 3 }}>
               <Typography variant="subtitle2" gutterBottom>
-                ⚠️ Overdue Medications ({dashboardData.medications.overdue.length})
+                Overdue Medications ({dashboardData.medications.overdue.length})
               </Typography>
               <Typography variant="body2">
                 {dashboardData.medications.overdue.map(med => med.commonName).join(', ')} - Please take as soon as possible
@@ -238,7 +238,7 @@ const Dashboard = () => {
                         <ListItem key={index} divider={index < Math.min(dashboardData.medications.dueSoon.length, 5) - 1}>
                           <ListItemAvatar>
                             <Avatar sx={{ bgcolor: 'primary.light' }}>
-                              💊
+                              <LocalPharmacy />
                             </Avatar>
                           </ListItemAvatar>
                           <ListItemText
@@ -319,7 +319,7 @@ const Dashboard = () => {
                       <ListItem key={`metric-${index}`} divider>
                         <ListItemAvatar>
                           <Avatar sx={{ bgcolor: 'info.light' }}>
-                            📊
+                            <Timeline />
                           </Avatar>
                         </ListItemAvatar>
                         <ListItemText

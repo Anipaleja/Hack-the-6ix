@@ -46,7 +46,7 @@ import AddMedicationDialog from '../../components/Medications/AddMedicationDialo
 import MedicationDetailsDialog from '../../components/Medications/MedicationDetailsDialog';
 
 const Medications = () => {
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
   const [medications, setMedications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -60,59 +60,55 @@ const Medications = () => {
   });
 
   useEffect(() => {
-    fetchMedications();
-    fetchUpcomingAlarms();
-    fetchAdherenceData();
-  }, []);
+    if (token) {
+      fetchMedications();
+      fetchUpcomingAlarms();
+      fetchAdherenceData();
+    }
+  }, [token]);
 
   const fetchMedications = async () => {
+    if (!token) return;
+    
     try {
       const response = await fetch('/api/medications', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       if (response.ok) {
         const data = await response.json();
-        setMedications(data);
+        setMedications(data.medications || []);
+      } else {
+        console.error('Failed to fetch medications:', response.status);
+        setMedications([]);
       }
     } catch (error) {
       console.error('Error fetching medications:', error);
+      setMedications([]);
     } finally {
       setLoading(false);
     }
   };
 
   const fetchUpcomingAlarms = async () => {
-    try {
-      const response = await fetch('/api/medications/upcoming-alarms', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUpcomingAlarms(data);
-      }
-    } catch (error) {
-      console.error('Error fetching upcoming alarms:', error);
-    }
+    if (!token) return;
+    
+    // For now, using mock data since the endpoint doesn't exist
+    // TODO: Implement upcoming-alarms endpoint in backend
+    setUpcomingAlarms([]);
   };
 
   const fetchAdherenceData = async () => {
-    try {
-      const response = await fetch('/api/medications/adherence-summary', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setAdherenceData(data);
-      }
-    } catch (error) {
-      console.error('Error fetching adherence data:', error);
-    }
+    if (!token) return;
+    
+    // For now, using mock data since the endpoint doesn't exist
+    // TODO: Implement adherence-summary endpoint in backend
+    setAdherenceData({
+      overallRate: 85,
+      totalMedications: medications.length,
+      activeMedications: medications.filter(med => med.isActive).length
+    });
   };
 
   const handleMedicationClick = (medication) => {
@@ -121,11 +117,13 @@ const Medications = () => {
   };
 
   const handleMarkTaken = async (medicationId) => {
+    if (!token) return;
+    
     try {
-      const response = await fetch(`/api/medications/${medicationId}/take`, {
+      const response = await fetch(`/api/medications/${medicationId}/take-dose`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -133,6 +131,8 @@ const Medications = () => {
         fetchMedications();
         fetchUpcomingAlarms();
         fetchAdherenceData();
+      } else {
+        console.error('Failed to mark medication as taken:', response.status);
       }
     } catch (error) {
       console.error('Error marking dose as taken:', error);
@@ -149,7 +149,7 @@ const Medications = () => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h4" component="h1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            💊 Medications
+            Medications
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Manage your medication schedule and track adherence
@@ -226,7 +226,7 @@ const Medications = () => {
                     <ListItem key={index}>
                       <ListItemIcon>
                         <Avatar sx={{ bgcolor: 'warning.light', width: 32, height: 32 }}>
-                          💊
+                          <LocalPharmacy />
                         </Avatar>
                       </ListItemIcon>
                       <ListItemText

@@ -78,22 +78,40 @@ const Navbar = ({ onMenuClick, isConnected }) => {
           <MenuIcon />
         </IconButton>
 
-        {/* App title */}
-        <Typography
-          variant="h6"
-          noWrap
-          component="div"
-          sx={{
-            flexGrow: 1,
-            fontWeight: 700,
-            background: 'linear-gradient(135deg, #2563eb 0%, #16a34a 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
+        {/* App title with logo */}
+        <Box 
+          sx={{ 
+            flexGrow: 1, 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1.5,
+            cursor: 'pointer'
           }}
+          onClick={() => navigate('/dashboard')}
         >
-          Vivirion Health
-        </Typography>
+          <img 
+            src="/logo.png" 
+            alt="Vivirion Health Logo" 
+            style={{ 
+              height: '40px', 
+              width: 'auto'
+            }} 
+          />
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{
+              fontWeight: 700,
+              background: 'linear-gradient(135deg, #2563eb 0%, #16a34a 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            Vivirion Health
+          </Typography>
+        </Box>
 
         {/* Connection status */}
         <Box sx={{ mr: 2 }}>

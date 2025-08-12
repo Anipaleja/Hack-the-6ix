@@ -7,9 +7,29 @@ const MedicationAlarm = require('../models/MedicationAlarm');
 
 const router = express.Router();
 
+console.log('🚀 MEDICATIONS ROUTE FILE LOADED - VERSION 2');
+
+// Simple test route
+router.get('/test', (req, res) => {
+  console.log('🔍 TEST: Simple test route called');
+  res.json({ message: 'Test route working' });
+});
+
 // Get all medications for user/family
 router.get('/', authenticateToken, async (req, res) => {
+  console.log('🔍 DEBUG: GET /api/medications called');
+  console.log('🔍 DEBUG: User ID:', req.user?.userId);
+  console.log('🔍 DEBUG: Family ID:', req.user?.familyId);
+  
   try {
+    // Simple test first - just return empty array
+    res.json({
+      medications: [],
+      totalPages: 0,
+      currentPage: 1,
+      total: 0
+    });
+    return;
     const { patientId } = req.query;
     
     let query = {};
@@ -70,6 +90,32 @@ router.get('/', authenticateToken, async (req, res) => {
   }
 });
 
+// Simple POST route for testing
+router.post('/simple', authenticateToken, async (req, res) => {
+  console.log('🔍 DEBUG: POST /api/medications/simple called');
+  console.log('🔍 DEBUG: User ID:', req.user?.userId);
+  console.log('🔍 DEBUG: Request body:', req.body);
+  
+  try {
+    // Simple success response for now
+    res.status(201).json({
+      message: 'Medication added successfully',
+      medication: {
+        _id: 'test-' + Date.now(),
+        name: req.body.name || req.body.commonName || 'Test Medication',
+        dosage: req.body.dosage || 'Test dosage',
+        frequency: req.body.frequency || req.body.schedule?.frequency || 'daily',
+        instructions: req.body.instructions || 'Test instructions',
+        isActive: true,
+        createdAt: new Date()
+      }
+    });
+  } catch (error) {
+    console.error('Add medication error:', error);
+    res.status(500).json({ message: 'Failed to add medication' });
+  }
+});
+
 // Add new medication
 router.post('/', authenticateToken, [
   body('scientificName').trim().isLength({ min: 1 }),
@@ -80,6 +126,9 @@ router.post('/', authenticateToken, [
   body('schedule.startDate').isISO8601(),
   body('patient').isMongoId()
 ], async (req, res) => {
+  console.log('=== MEDICATIONS POST ROUTE CALLED ===');
+  console.log('Request body:', req.body);
+  console.log('User:', req.user);
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

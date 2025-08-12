@@ -32,7 +32,7 @@ const useAuthStore = create(
             password,
           });
 
-          const { token, user } = response.data.data;
+          const { token, user } = response.data;
           
           set({ 
             user, 
@@ -45,7 +45,7 @@ const useAuthStore = create(
           
           return { success: true, user };
         } catch (error) {
-          const errorMessage = error.response?.data?.error || 'Login failed';
+          const errorMessage = error.response?.data?.message || 'Login failed';
           set({ 
             error: errorMessage, 
             isLoading: false 
@@ -60,7 +60,7 @@ const useAuthStore = create(
         try {
           const response = await axios.post('/auth/register', userData);
           
-          const { token, user } = response.data.data;
+          const { token, user } = response.data;
           
           set({ 
             user, 
@@ -73,7 +73,7 @@ const useAuthStore = create(
           
           return { success: true, user };
         } catch (error) {
-          const errorMessage = error.response?.data?.error || 'Registration failed';
+          const errorMessage = error.response?.data?.message || 'Registration failed';
           set({ 
             error: errorMessage, 
             isLoading: false 
@@ -104,8 +104,8 @@ const useAuthStore = create(
         get().setToken(token);
 
         try {
-          const response = await axios.get('/auth/me');
-          const user = response.data.data;
+          const response = await axios.get('/auth/profile');
+          const user = response.data;
           
           set({ 
             user, 
@@ -124,7 +124,7 @@ const useAuthStore = create(
         set({ isLoading: true, error: null });
         try {
           const response = await axios.put('/auth/profile', profileData);
-          const updatedUser = response.data.data;
+          const updatedUser = response.data;
           
           set({ 
             user: updatedUser, 

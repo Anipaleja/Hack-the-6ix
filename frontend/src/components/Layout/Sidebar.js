@@ -23,6 +23,7 @@ import {
   LocalHospital,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import logo from '../../assets/logo.png';
 
 const drawerWidth = 260;
 
@@ -87,11 +88,14 @@ const Sidebar = ({ open, onClose }) => {
       {/* Header */}
       <Box sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <LocalHospital 
-            sx={{ 
-              color: 'primary.main', 
-              mr: 1,
-              fontSize: 32 
+          <img 
+            src={logo} 
+            alt="Vivirion Logo" 
+            style={{ 
+              width: 48,
+              height: 48,
+              marginRight: 12,
+              objectFit: 'contain'
             }} 
           />
           <Typography

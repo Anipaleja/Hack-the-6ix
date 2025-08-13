@@ -11,8 +11,17 @@ const cron = require('node-cron');
 require('dotenv').config();
 
 // Import routes
+console.log('Importing auth routes...');
 const authRoutes = require('./routes/auth');
+console.log('✅ Auth routes imported successfully');
+
+console.log('Importing medication routes...');
 const medicationRoutes = require('./routes/medications');
+console.log('✅ Medication routes imported successfully');
+
+console.log('Importing AI assistant routes...');
+const aiAssistantRoutes = require('./routes/aiAssistant');
+console.log('✅ AI assistant routes imported successfully');
 // const queryRoutes = require('./routes/queries'); // Temporarily disabled due to missing OpenAI key
 // const medicalInfoRoutes = require('./routes/medicalInfo');
 // const healthDataRoutes = require('./routes/healthData');
@@ -95,6 +104,9 @@ console.log('Auth routes mounted');
 console.log('Mounting medications routes...');
 app.use('/api/medications', medicationRoutes);
 console.log('Medications routes mounted');
+console.log('Mounting AI assistant routes...');
+app.use('/api/ai-assistant', aiAssistantRoutes);
+console.log('AI assistant routes mounted');
 // app.use('/api/queries', queryRoutes); // Temporarily disabled due to missing OpenAI key
 // app.use('/api/medical-info', medicalInfoRoutes);
 // app.use('/api/health-data', healthDataRoutes);

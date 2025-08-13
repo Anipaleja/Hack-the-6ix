@@ -41,62 +41,121 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useAuthStore } from '../../store/authStore';
 
-const AddMedicationDialog = ({ open, onClose, onSuccess }) => {
+const AddMedicationDialog = ({ open, onClose, onSuccess, editMode = false, initialData = null }) => {
   const { token } = useAuthStore();
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const [formData, setFormData] = useState({
-    // Basic Info
-    scientificName: '',
-    commonName: '',
-    color: '#1976d2',
-    dosage: {
-      amount: '',
-      unit: 'mg'
-    },
-    instructions: '',
-    purpose: '',
-    category: 'prescription',
-    sideEffects: [],
-
-    // Schedule
-    schedule: {
-      frequency: 'once_daily',
-      times: [{ hour: 8, minute: 0 }],
-      startDate: new Date(),
-      endDate: null,
-      daysOfWeek: [],
-      interval: 1
-    },
-
-    // Medical Info
-    prescribedBy: {
-      doctorName: '',
-      prescriptionDate: null,
-      prescriptionNumber: ''
-    },
-
-    // Inventory
-    inventory: {
-      totalPills: '',
-      remainingPills: '',
-      refillReminder: {
-        enabled: true,
-        threshold: 7
-      }
-    },
-
-    // Alarm Settings
-    alarmSettings: {
-      soundEnabled: true,
-      vibrationEnabled: true,
-      reminderInterval: 5,
-      maxReminders: 3,
-      notifyFamilyAfter: 15
+  const getInitialFormData = () => {
+    if (editMode && initialData) {
+      return {
+        scientificName: initialData.scientificName || '',
+        commonName: initialData.commonName || '',
+        category: initialData.category || 'prescription',
+        dosage: {
+          amount: initialData.dosage?.amount || '',
+          unit: initialData.dosage?.unit || 'mg'
+        },
+        schedule: {
+          frequency: initialData.schedule?.frequency || 'once_daily',
+          times: initialData.schedule?.times || [{ hour: 8, minute: 0 }],
+          startDate: initialData.schedule?.startDate ? new Date(initialData.schedule.startDate) : new Date(),
+          endDate: initialData.schedule?.endDate ? new Date(initialData.schedule.endDate) : null,
+          daysOfWeek: initialData.schedule?.daysOfWeek || [],
+          interval: initialData.schedule?.interval || 1
+        },
+        instructions: initialData.instructions || '',
+        purpose: initialData.purpose || '',
+        sideEffects: initialData.sideEffects || [],
+        patientId: initialData.patient || null,
+        color: initialData.color || '#1976d2',
+        prescribedBy: {
+          doctorName: initialData.prescribedBy?.doctorName || '',
+          prescriptionDate: initialData.prescribedBy?.prescriptionDate ? new Date(initialData.prescribedBy.prescriptionDate) : null,
+          prescriptionNumber: initialData.prescribedBy?.prescriptionNumber || ''
+        },
+        inventory: {
+          totalPills: initialData.inventory?.totalPills || '',
+          remainingPills: initialData.inventory?.remainingPills || '',
+          refillReminder: {
+            enabled: initialData.inventory?.refillReminder?.enabled || false,
+            threshold: initialData.inventory?.refillReminder?.threshold || 5
+          }
+        },
+        alarmSettings: {
+          soundEnabled: initialData.alarmSettings?.soundEnabled !== undefined ? initialData.alarmSettings.soundEnabled : true,
+          vibrationEnabled: initialData.alarmSettings?.vibrationEnabled !== undefined ? initialData.alarmSettings.vibrationEnabled : true,
+          reminderInterval: initialData.alarmSettings?.reminderInterval || 5,
+          maxReminders: initialData.alarmSettings?.maxReminders || 3,
+          notifyFamilyAfter: initialData.alarmSettings?.notifyFamilyAfter || 15
+        },
+        familyVisibility: {
+          visible: initialData.familyVisibility?.visible !== undefined ? initialData.familyVisibility.visible : true,
+          allowFamilyReminders: initialData.familyVisibility?.allowFamilyReminders !== undefined ? initialData.familyVisibility.allowFamilyReminders : true,
+          shareAdherence: initialData.familyVisibility?.shareAdherence !== undefined ? initialData.familyVisibility.shareAdherence : true
+        }
+      };
     }
-  });
+    return {
+      scientificName: '',
+      commonName: '',
+      category: 'prescription',
+      dosage: {
+        amount: '',
+        unit: 'mg'
+      },
+      schedule: {
+        frequency: 'once_daily',
+        times: [{ hour: 8, minute: 0 }],
+        startDate: new Date(),
+        endDate: null,
+        daysOfWeek: [],
+        interval: 1
+      },
+      instructions: '',
+      purpose: '',
+      sideEffects: [],
+      patientId: null,
+      color: '#1976d2',
+      prescribedBy: {
+        doctorName: '',
+        prescriptionDate: null,
+        prescriptionNumber: ''
+      },
+      inventory: {
+        totalPills: '',
+        remainingPills: '',
+        refillReminder: {
+          enabled: true,
+          threshold: 7
+        }
+      },
+      alarmSettings: {
+        soundEnabled: true,
+        vibrationEnabled: true,
+        reminderInterval: 5,
+        maxReminders: 3,
+        notifyFamilyAfter: 15
+      },
+      familyVisibility: {
+        visible: true,
+        allowFamilyReminders: true,
+        shareAdherence: true
+      }
+    };
+  };
+
+  const [formData, setFormData] = useState(() => getInitialFormData());
+
+  // Reset form data when dialog opens in edit mode
+  React.useEffect(() => {
+    if (open) {
+      setFormData(getInitialFormData());
+      setActiveStep(0);
+      setError('');
+    }
+  }, [open, editMode, initialData]);
 
   const steps = ['Basic Info', 'Schedule', 'Medical Info', 'Settings'];
 
@@ -202,14 +261,17 @@ const AddMedicationDialog = ({ open, onClose, onSuccess }) => {
     setError('');
 
     if (!token) {
-      setError('You must be logged in to add medications');
+      setError('You must be logged in to save medications');
       setLoading(false);
       return;
     }
 
     try {
-      const response = await fetch('/api/medications', {
-        method: 'POST',
+      const url = editMode ? `/api/medications/${initialData._id}` : '/api/medications';
+      const method = editMode ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -225,7 +287,7 @@ const AddMedicationDialog = ({ open, onClose, onSuccess }) => {
         handleClose();
       } else {
         const errorData = await response.json();
-        setError(errorData.message || 'Failed to add medication');
+        setError(errorData.message || `Failed to ${editMode ? 'update' : 'add'} medication`);
       }
     } catch (error) {
       setError('Network error. Please try again.');
@@ -640,7 +702,7 @@ const AddMedicationDialog = ({ open, onClose, onSuccess }) => {
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h6">Add New Medication</Typography>
+        <Typography variant="h6">{editMode ? 'Edit Medication' : 'Add New Medication'}</Typography>
         <IconButton onClick={handleClose}>
           <Close />
         </IconButton>
@@ -690,7 +752,10 @@ const AddMedicationDialog = ({ open, onClose, onSuccess }) => {
             onClick={handleSubmit}
             disabled={!isStepValid(activeStep) || loading}
           >
-            {loading ? 'Adding...' : 'Add Medication'}
+            {loading 
+              ? (editMode ? 'Updating...' : 'Adding...') 
+              : (editMode ? 'Update Medication' : 'Add Medication')
+            }
           </Button>
         )}
       </DialogActions>

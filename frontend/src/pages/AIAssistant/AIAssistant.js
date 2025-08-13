@@ -61,7 +61,7 @@ const AIAssistant = () => {
     "What exercises are safe for my condition?"
   ];
 
-  const handleSendMessage = async () => {
+    const handleSendMessage = async () => {
     if (!inputText.trim()) return;
 
     const newMessage = {
@@ -72,42 +72,71 @@ const AIAssistant = () => {
     };
 
     setMessages(prev => [...prev, newMessage]);
+    const currentQuestion = inputText;
     setInputText('');
     setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse = {
+    try {
+      // Call our new Ollama AI backend
+      const response = await fetch('/api/ai-assistant/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${useAuthStore.getState().token}`
+        },
+        body: JSON.stringify({
+          query: currentQuestion,
+          context: {
+            timestamp: new Date().toISOString(),
+            sessionId: `session_${Date.now()}`
+          }
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        const aiResponse = {
+          id: messages.length + 2,
+          text: result.data.response,
+          sender: 'ai',
+          timestamp: new Date(),
+          confidence: result.data.confidence,
+          category: result.data.category,
+          urgency: result.data.urgency,
+          model: result.data.model,
+          processingTime: result.data.processingTime
+        };
+        
+        setMessages(prev => [...prev, aiResponse]);
+      } else {
+        // Fallback response if AI service fails
+        const fallbackResponse = {
+          id: messages.length + 2,
+          text: result.data?.response || "I apologize, but I'm experiencing technical difficulties. Please try again in a moment or consult your healthcare provider for immediate assistance.",
+          sender: 'ai',
+          timestamp: new Date(),
+          isError: true
+        };
+        
+        setMessages(prev => [...prev, fallbackResponse]);
+      }
+    } catch (error) {
+      console.error('AI Assistant error:', error);
+      
+      // Network error fallback
+      const errorResponse = {
         id: messages.length + 2,
-        text: getAIResponse(inputText),
+        text: "I'm currently unable to connect to the AI service. Please check your internet connection and try again. For urgent health concerns, please contact your healthcare provider.",
         sender: 'ai',
-        timestamp: new Date()
+        timestamp: new Date(),
+        isError: true
       };
-      setMessages(prev => [...prev, aiResponse]);
+      
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
       setIsLoading(false);
-    }, 1500);
-  };
-
-  const getAIResponse = (question) => {
-    const responses = {
-      medication: "Based on your current medication profile, I can help you understand potential interactions and side effects. For specific medical advice, please consult with your healthcare provider.",
-      symptoms: "I understand you're experiencing symptoms. While I can provide general guidance, it's important to consult with a healthcare professional for proper diagnosis and treatment.",
-      health: "Your health data shows interesting patterns. I recommend discussing these trends with your doctor during your next appointment.",
-      emergency: "If this is a medical emergency, please call 911 immediately. For urgent but non-emergency situations, contact your healthcare provider or visit an urgent care center.",
-      default: "Thank you for your question. Based on the information available, I recommend consulting with your healthcare provider for personalized medical advice. I can help you prepare questions for your next appointment."
-    };
-
-    const lowerQuestion = question.toLowerCase();
-    if (lowerQuestion.includes('medication') || lowerQuestion.includes('drug')) {
-      return responses.medication;
-    } else if (lowerQuestion.includes('symptom') || lowerQuestion.includes('pain')) {
-      return responses.symptoms;
-    } else if (lowerQuestion.includes('health') || lowerQuestion.includes('data')) {
-      return responses.health;
-    } else if (lowerQuestion.includes('emergency') || lowerQuestion.includes('urgent')) {
-      return responses.emergency;
     }
-    return responses.default;
   };
 
   const handleQuickQuestion = (question) => {
@@ -117,7 +146,7 @@ const AIAssistant = () => {
   const clearChat = () => {
     setMessages([{
       id: 1,
-      text: "Hello! I'm your AI Health Assistant. I can help you with medication questions, symptom analysis, health guidance, and more. How can I assist you today?",
+      text: "Hello! I'm your AI Health Assistant powered by Llama 3.2. I can help you with medication questions, symptom analysis, health guidance, and more. How can I assist you today?",
       sender: 'ai',
       timestamp: new Date()
     }]);
@@ -181,6 +210,66 @@ const AIAssistant = () => {
                         }}
                       >
                         <Typography variant="body2">{message.text}</Typography>
+                        
+                        {/* AI Metadata Display */}
+                        {message.sender === 'ai' && (message.confidence || message.isError) && (
+                          <Box sx={{ mt: 1.5, pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
+                            <Typography variant="caption" sx={{ display: 'block', mb: 0.5, fontWeight: 'medium' }}>
+                              {message.isError ? 'Service Status:' : 'AI Response Details:'}
+                            </Typography>
+                            
+                            {message.isError ? (
+                              <Chip
+                                size="small"
+                                label="Connection Error"
+                                color="error"
+                                variant="outlined"
+                                sx={{ fontSize: '0.7rem', height: 20 }}
+                              />
+                            ) : (
+                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
+                                {/* Confidence Score */}
+                                <Chip
+                                  size="small"
+                                  label={`Confidence: ${Math.round(message.confidence * 100)}%`}
+                                  color={message.confidence > 0.8 ? 'success' : message.confidence > 0.6 ? 'warning' : 'default'}
+                                  variant="outlined"
+                                  sx={{ fontSize: '0.7rem', height: 20 }}
+                                />
+                                
+                                {/* Urgency Level */}
+                                {message.urgency && (
+                                  <Chip
+                                    size="small"
+                                    label={`Urgency: ${message.urgency}`}
+                                    color={message.urgency === 'high' ? 'error' : message.urgency === 'medium' ? 'warning' : 'info'}
+                                    variant="outlined"
+                                    sx={{ fontSize: '0.7rem', height: 20 }}
+                                  />
+                                )}
+                                
+                                {/* Category */}
+                                {message.category && (
+                                  <Chip
+                                    size="small"
+                                    label={message.category}
+                                    color="primary"
+                                    variant="outlined"
+                                    sx={{ fontSize: '0.7rem', height: 20 }}
+                                  />
+                                )}
+                              </Box>
+                            )}
+                            
+                            {!message.isError && (
+                              <Typography variant="caption" sx={{ display: 'block', opacity: 0.7, fontSize: '0.65rem' }}>
+                                {message.model && `Model: ${message.model}`}
+                                {message.processingTime && ` • Response time: ${message.processingTime}ms`}
+                              </Typography>
+                            )}
+                          </Box>
+                        )}
+                        
                         <Typography
                           variant="caption"
                           sx={{

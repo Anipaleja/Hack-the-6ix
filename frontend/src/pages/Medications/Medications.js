@@ -22,7 +22,8 @@ import {
   ListItemIcon,
   ListItemText,
   ListItemSecondaryAction,
-  Badge
+  Badge,
+  Snackbar
 } from '@mui/material';
 import {
   Add,
@@ -50,6 +51,7 @@ const Medications = () => {
   const [medications, setMedications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedMedication, setSelectedMedication] = useState(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [upcomingAlarms, setUpcomingAlarms] = useState([]);
@@ -57,6 +59,11 @@ const Medications = () => {
     overallRate: 0,
     totalMedications: 0,
     activeMedications: 0
+  });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
   });
 
   useEffect(() => {
@@ -139,19 +146,118 @@ const Medications = () => {
     }
   };
 
+  const handleDeleteMedication = async (medicationId) => {
+    if (!token) return;
+    
+    try {
+      const response = await fetch(`/api/medications/${medicationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        setSnackbar({
+          open: true,
+          message: 'Medication deleted successfully',
+          severity: 'success'
+        });
+        fetchMedications();
+      } else {
+        const error = await response.json();
+        setSnackbar({
+          open: true,
+          message: error.message || 'Failed to delete medication',
+          severity: 'error'
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting medication:', error);
+      setSnackbar({
+        open: true,
+        message: 'Error deleting medication',
+        severity: 'error'
+      });
+    }
+  };
+
+  const handleEditMedication = (medication) => {
+    setSelectedMedication(medication);
+    setEditDialogOpen(true);
+  };
+
+  const handleTogglePause = async (medicationId) => {
+    if (!token) return;
+    
+    try {
+      const response = await fetch(`/api/medications/${medicationId}/toggle-pause`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        setSnackbar({
+          open: true,
+          message: result.message,
+          severity: 'success'
+        });
+        fetchMedications();
+      } else {
+        const error = await response.json();
+        setSnackbar({
+          open: true,
+          message: error.message || 'Failed to update medication',
+          severity: 'error'
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling medication pause:', error);
+      setSnackbar({
+        open: true,
+        message: 'Error updating medication',
+        severity: 'error'
+      });
+    }
+  };
+
   const activeMedications = medications.filter(med => med.isActive && !med.isPaused);
   const pausedMedications = medications.filter(med => med.isActive && med.isPaused);
   const needsRefill = medications.filter(med => med.needsRefill);
 
   return (
-    <Box>
+    <Box sx={{ p: { xs: 2, md: 3 } }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        mb: 4,
+        p: 3,
+        bgcolor: 'background.paper',
+        borderRadius: 3,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+      }}>
         <Box>
-          <Typography variant="h4" component="h1" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="h4" component="h1" sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            fontWeight: 700,
+            background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
+            <LocalPharmacy sx={{ color: 'primary.main' }} />
             Medications
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
             Manage your medication schedule and track adherence
           </Typography>
         </Box>
@@ -160,6 +266,16 @@ const Medications = () => {
           startIcon={<Add />}
           onClick={() => setAddDialogOpen(true)}
           size="large"
+          sx={{ 
+            px: 3,
+            py: 1.5,
+            borderRadius: 3,
+            fontWeight: 600,
+            boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
+            '&:hover': {
+              boxShadow: '0 6px 16px rgba(25, 118, 210, 0.4)'
+            }
+          }}
         >
           Add Medication
         </Button>
@@ -260,18 +376,28 @@ const Medications = () => {
 
           {/* Active Medications */}
           {activeMedications.length > 0 ? (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h5" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ mb: 5 }}>
+              <Typography variant="h5" sx={{ 
+                mb: 3, 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1,
+                fontWeight: 600,
+                color: 'text.primary'
+              }}>
                 <CheckCircle color="success" />
                 Active Medications ({activeMedications.length})
               </Typography>
-              <Grid container spacing={2}>
+              <Grid container spacing={3}>
                 {activeMedications.map((medication) => (
                   <Grid item xs={12} md={6} lg={4} key={medication._id}>
                     <MedicationCard
                       medication={medication}
                       onClick={() => handleMedicationClick(medication)}
                       onMarkTaken={handleMarkTaken}
+                      onEdit={handleEditMedication}
+                      onDelete={handleDeleteMedication}
+                      onTogglePause={handleTogglePause}
                     />
                   </Grid>
                 ))}
@@ -302,17 +428,27 @@ const Medications = () => {
 
           {/* Paused Medications */}
           {pausedMedications.length > 0 && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ mb: 5 }}>
+              <Typography variant="h6" sx={{ 
+                mb: 3, 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1,
+                fontWeight: 600,
+                color: 'warning.main'
+              }}>
                 <Pause color="warning" />
                 Paused Medications ({pausedMedications.length})
               </Typography>
-              <Grid container spacing={2}>
+              <Grid container spacing={3}>
                 {pausedMedications.map((medication) => (
                   <Grid item xs={12} md={6} lg={4} key={medication._id}>
                     <MedicationCard
                       medication={medication}
                       onClick={() => handleMedicationClick(medication)}
+                      onEdit={handleEditMedication}
+                      onDelete={handleDeleteMedication}
+                      onTogglePause={handleTogglePause}
                       isPaused={true}
                     />
                   </Grid>
@@ -353,6 +489,38 @@ const Medications = () => {
           fetchAdherenceData();
         }}
       />
+
+      {/* Edit Medication Dialog */}
+      <AddMedicationDialog
+        open={editDialogOpen}
+        onClose={() => {
+          setEditDialogOpen(false);
+          setSelectedMedication(null);
+        }}
+        onSuccess={() => {
+          setEditDialogOpen(false);
+          setSelectedMedication(null);
+          fetchMedications();
+          fetchAdherenceData();
+        }}
+        editMode={true}
+        initialData={selectedMedication}
+      />
+
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert 
+          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

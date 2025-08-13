@@ -13,6 +13,9 @@ console.log('✅ Auth routes imported successfully');
 const medicationRoutes = require('./backend/routes/medications');
 console.log('✅ Medication routes imported successfully');
 
+const aiAssistantRoutes = require('./backend/routes/aiAssistant');
+console.log('✅ AI assistant routes imported successfully');
+
 const healthLogRoutes = require('./routes/healthLogs');
 const userRoutes = require('./routes/users');
 const healthTimerRoutes = require('./routes/healthTimers');
@@ -87,6 +90,9 @@ console.log('✅ Auth routes mounted at /api/auth');
 
 app.use('/api/medications', medicationRoutes);
 console.log('✅ Medication routes mounted at /api/medications');
+
+app.use('/api/ai-assistant', aiAssistantRoutes);
+console.log('✅ AI assistant routes mounted at /api/ai-assistant');
 
 // Routes - Original
 app.use('/api/health-logs', healthLogRoutes);

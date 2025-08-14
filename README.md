@@ -2,7 +2,7 @@
 
 A comprehensive healthcare management platform with multi-role authentication, medication tracking, AI health assistant, and family sharing features.
 
-## 🚀 Features
+## Features
 
 ### User Roles & Authentication
 - **Multi-role system**: Patient, Doctor, Next of Kin
@@ -46,7 +46,7 @@ A comprehensive healthcare management platform with multi-role authentication, m
 - **Background job processing** for alarms and notifications
 - **Data analytics** and reporting capabilities
 
-## 🏗️ Technology Stack
+## Technology Stack
 
 ### Backend
 - **Node.js** with Express.js framework
@@ -126,7 +126,7 @@ Vivirion/
 └── README.md
 ```
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 - Node.js (v16 or higher)
@@ -197,7 +197,7 @@ Vivirion/
 - **Backend API**: http://localhost:5000/api
 - **Health Check**: http://localhost:5000/api/health
 
-## 🔧 API Endpoints
+## API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - Register new user
@@ -228,7 +228,7 @@ Vivirion/
 - `POST /api/notifications/test` - Send test notification
 - `PUT /api/notifications/preferences` - Update notification settings
 
-## 🔮 Real-Time Features
+## Real-Time Features
 
 ### Socket.IO Events
 
@@ -244,7 +244,7 @@ Vivirion/
 - `queryResponse` - AI assistant response
 - `healthDataAdded` - New health data recorded
 
-## 🔐 Security Features
+## Security Features
 
 - **JWT Authentication** with secure token management
 - **Rate limiting** to prevent API abuse
@@ -254,7 +254,7 @@ Vivirion/
 - **Permission-based access** control for family features
 - **Data encryption** for sensitive health information
 
-## 🏥 Healthcare Compliance
+## Healthcare Compliance
 
 - **HIPAA considerations** with data privacy controls
 - **Medical disclaimers** for AI-generated health advice
@@ -262,7 +262,7 @@ Vivirion/
 - **Data retention policies** for health information
 - **Audit logging** for healthcare data access
 
-## 📱 Device Integration
+## Device Integration
 
 ### Supported Health Platforms
 - **Apple HealthKit** (iOS devices, Apple Watch)
@@ -276,7 +276,7 @@ Vivirion/
 - **SMS notifications** (via Twilio integration)
 - **Email notifications** for important alerts
 
-## 🚀 Deployment
+## Deployment
 
 ### Production Environment Variables
 ```env
@@ -293,7 +293,7 @@ FRONTEND_URL=https://your-domain.com
 - **Database**: MongoDB Atlas
 - **File Storage**: AWS S3, Google Cloud Storage
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -301,15 +301,15 @@ FRONTEND_URL=https://your-domain.com
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
 
-## 🆘 Support
+## Support
 
 For support, email support@vivirion.com or create an issue in this repository.
 
-## 🎯 Roadmap
+## Roadmap
 
 - [ ] **Mobile Apps** (React Native)
 - [ ] **Telemedicine Integration** (video consultations)
@@ -319,11 +319,6 @@ For support, email support@vivirion.com or create an issue in this repository.
 - [ ] **Multi-language Support**
 - [ ] **Advanced Analytics** dashboard
 - [ ] **Clinical Trial** participation features
-
----
-
-**Built with ❤️ for better healthcare management**
-
 
 ### **Quantum Security Revolution** - Quantum-Secured Health Companion Backend
 
@@ -365,6 +360,14 @@ For support, email support@vivirion.com or create an issue in this repository.
 
 ## System Architecture
 
+```bash
+Frontend Pages → API Endpoints → Database → Dashboard Display
+     ↓              ↓              ↓           ↓
+Care Provider → /api/care-provider → MongoDB → RPN Stats
+Medications   → /api/medications   → MongoDB → Med Stats  
+Health Data   → /api/health-data   → MongoDB → Health Stats
+Family        → /api/family        → MongoDB → Family Stats
+```
 This backend is the secure core of an **quantum-protected health ecosystem**:
 
 - **Panda Companion Device**: Raspberry Pi with voice interaction and LED indicators

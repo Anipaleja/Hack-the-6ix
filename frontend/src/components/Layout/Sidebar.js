@@ -49,6 +49,11 @@ const menuItems = [
     path: '/ai-assistant',
   },
   {
+    text: 'Care Provider',
+    icon: <LocalHospital />,
+    path: '/care-provider',
+  },
+  {
     text: 'Family',
     icon: <Groups />,
     path: '/family',

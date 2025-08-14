@@ -15,6 +15,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Medications from './pages/Medications/Medications';
 import HealthData from './pages/HealthData/HealthData';
 import AIAssistant from './pages/AIAssistant/AIAssistant';
+import CareProvider from './pages/CareProvider/CareProvider';
 import Family from './pages/Family/Family';
 import Profile from './pages/Profile/Profile';
 import Settings from './pages/Settings/Settings';
@@ -170,6 +171,7 @@ function App() {
                       <Route path="medications" element={<Medications />} />
                       <Route path="health-data" element={<HealthData />} />
                       <Route path="ai-assistant" element={<AIAssistant />} />
+                      <Route path="care-provider" element={<CareProvider />} />
                       <Route path="family" element={<Family />} />
                       <Route path="profile" element={<Profile />} />
                       <Route path="settings" element={<Settings />} />

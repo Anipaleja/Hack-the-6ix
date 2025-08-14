@@ -288,6 +288,48 @@ const Dashboard = () => {
               </Card>
             </Grid>
 
+            {/* Family Updates */}
+            <Grid item xs={12} md={6}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Groups color="primary" />
+                    Family Updates
+                  </Typography>
+                  
+                  {dashboardData.family.recentAlerts.length > 0 ? (
+                    <List>
+                      {dashboardData.family.recentAlerts.slice(0, 3).map((alert, index) => (
+                        <ListItem key={index} divider={index < 2}>
+                          <ListItemAvatar>
+                            <Avatar sx={{ bgcolor: alert.type === 'medication' ? 'warning.light' : 'info.light' }}>
+                              {alert.type === 'medication' ? <NotificationImportant /> : <Groups />}
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={alert.message}
+                            secondary={new Date(alert.timestamp).toLocaleString()}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  ) : (
+                    <Box sx={{ textAlign: 'center', py: 3 }}>
+                      <Groups sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
+                      <Typography variant="body2" color="text.secondary">
+                        No recent family updates
+                      </Typography>
+                    </Box>
+                  )}
+
+                  <Divider sx={{ my: 2 }} />
+                  <Button variant="outlined" fullWidth href="/family">
+                    View Family Dashboard
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
             {/* Recent Activity */}
             <Grid item xs={12} md={6}>
               <Card>
@@ -386,48 +428,6 @@ const Dashboard = () => {
                   <Divider sx={{ my: 2 }} />
                   <Button variant="outlined" fullWidth href="/health-data">
                     View Health Data
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            {/* Family Dashboard */}
-            <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Groups color="primary" />
-                    Family Updates
-                  </Typography>
-                  
-                  {dashboardData.family.recentAlerts.length > 0 ? (
-                    <List>
-                      {dashboardData.family.recentAlerts.slice(0, 3).map((alert, index) => (
-                        <ListItem key={index} divider={index < 2}>
-                          <ListItemAvatar>
-                            <Avatar sx={{ bgcolor: alert.type === 'medication' ? 'warning.light' : 'info.light' }}>
-                              {alert.type === 'medication' ? <NotificationImportant /> : <Groups />}
-                            </Avatar>
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary={alert.message}
-                            secondary={new Date(alert.timestamp).toLocaleString()}
-                          />
-                        </ListItem>
-                      ))}
-                    </List>
-                  ) : (
-                    <Box sx={{ textAlign: 'center', py: 3 }}>
-                      <Groups sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
-                      <Typography variant="body2" color="text.secondary">
-                        No recent family updates
-                      </Typography>
-                    </Box>
-                  )}
-
-                  <Divider sx={{ my: 2 }} />
-                  <Button variant="outlined" fullWidth href="/family">
-                    View Family Dashboard
                   </Button>
                 </CardContent>
               </Card>
